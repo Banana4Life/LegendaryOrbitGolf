@@ -7,6 +7,8 @@ namespace Objects.Background
 	{
 		public float scrollSpeed = 1;
 		public Camera playerCamera;
+		public float textureScale = 1;
+		
 		private Renderer _renderer;
 		private static readonly int MainTex = Shader.PropertyToID("_MainTex");
 		private Vector2 _lastCameraPos;
@@ -39,7 +41,7 @@ namespace Objects.Background
 			mat.SetTextureOffset(MainTex, currentOffset - newOffset);
 			var localScale = transform.localScale;
 			
-			mat.SetTextureScale(MainTex, new Vector2(localScale.x, localScale.z));
+			mat.SetTextureScale(MainTex, new Vector2(localScale.x / textureScale, localScale.z / textureScale));
 		}
 	}
 }

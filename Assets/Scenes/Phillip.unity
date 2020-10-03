@@ -166,6 +166,7 @@ GameObject:
   - component: {fileID: 546912854}
   - component: {fileID: 546912853}
   - component: {fileID: 546912852}
+  - component: {fileID: 546912855}
   m_Layer: 0
   m_Name: Black Base
   m_TagString: Untagged
@@ -250,6 +251,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 546912850}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &546912855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 546912850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b67802beadb8092ad79448f7f2ca84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 610106006}
 --- !u!1 &610106004
 GameObject:
   m_ObjectHideFlags: 0
@@ -346,6 +360,7 @@ GameObject:
   - component: {fileID: 706907947}
   - component: {fileID: 706907946}
   - component: {fileID: 706907949}
+  - component: {fileID: 706907950}
   m_Layer: 0
   m_Name: Stars
   m_TagString: Untagged
@@ -442,7 +457,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce37115c19aecd33db3cda8f60e4934a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ScrollSpeed: 1
+  scrollSpeed: 1
+  playerCamera: {fileID: 610106006}
+  textureScale: 2
+--- !u!114 &706907950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 706907944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b67802beadb8092ad79448f7f2ca84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   playerCamera: {fileID: 610106006}
 --- !u!1 &1667614306
 GameObject:
