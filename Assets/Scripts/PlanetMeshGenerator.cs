@@ -452,6 +452,7 @@ public class PlanetMeshGenerator : MonoBehaviour
     {
         var meshObject = new GameObject(gameObjectName);
         meshObject.transform.parent = transform;
+        meshObject.transform.localPosition = Vector3.zero;
 
         var surfaceRenderer = meshObject.AddComponent<MeshRenderer>();
         surfaceRenderer.material = material;

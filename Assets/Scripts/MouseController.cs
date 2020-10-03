@@ -19,6 +19,8 @@ public class MouseController : MonoBehaviour
             mousePosition.z = mainCamera.transform.position.y;
             holding = true;
             ball.frozen = true;
+            ball.transform.position = mainCamera.ScreenToWorldPoint(mousePosition);
+            
         }
         else if (Input.GetButtonUp("Fire1"))
         {
@@ -44,7 +46,7 @@ public class MouseController : MonoBehaviour
         var transformPosition = ball.transform.position;
         if (holding)
         {
-            Gizmos.DrawLine(transformPosition, hover);
+            // Gizmos.DrawLine(transformPosition, hover);
         }
     }
 }

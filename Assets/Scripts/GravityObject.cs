@@ -43,7 +43,7 @@ public class GravityObject : MonoBehaviour
         if (gravityAffected)
         {
             acceleration = Vector3.zero;
-            foreach (var gravityObject in World.allGravityObjects)
+            foreach (var gravityObject in World.allPlanets)
             {
                 if (gravityObject != this)
                 {
@@ -89,8 +89,9 @@ public class GravityObject : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         var pos = transform.position;
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(pos, radiusGravity);
+        
+        Handles.color = Color.red;
+        Handles.DrawWireDisc(pos, Vector3.up, radiusGravity);
         
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(pos, radius);
@@ -102,7 +103,7 @@ public class GravityObject : MonoBehaviour
         
         if (this is Ball)
         {
-            foreach (var planet in World.allGravityObjects)
+            foreach (var planet in World.allPlanets)
             {
                 Handles.color = Color.red;
                 Handles.DrawWireDisc(planet.transform.position, Vector3.up, planet.radiusGravity);

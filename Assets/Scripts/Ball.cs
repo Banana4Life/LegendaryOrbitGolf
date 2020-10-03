@@ -29,7 +29,7 @@ public class Ball : GravityObject
 
     public void PlaceInOrbit()
     {
-        var planets = World.allGravityObjects.FindAll(go => go is Planet);
+        var planets = World.allPlanets.FindAll(go => go is Planet);
         var planet = planets[Random.Range(0, planets.Count)];
         var gravityObject = planet.GetComponent<GravityObject>();
         transform.position = planet.transform.position;
@@ -38,6 +38,7 @@ public class Ball : GravityObject
         var a = Random.Range((distance + planet.radius + radius) / 2, (distance + gravityObject.radiusGravity - planet.radius - radius) / 2);
         var orbitModifier = (2 / distance - 1 / a);
         velocity = Vector3.forward * (float) Math.Sqrt(G * planet.mass * orbitModifier);
+        frozen = false;
     }
 
 
