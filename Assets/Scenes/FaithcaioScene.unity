@@ -362,13 +362,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1451995952, guid: 9ac4c14e8b49798a998b139c697acbfd, type: 3}
-      propertyPath: velocity.z
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 502315421747432912, guid: 9ac4c14e8b49798a998b139c697acbfd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 502315421747432912, guid: 9ac4c14e8b49798a998b139c697acbfd, type: 3}
       propertyPath: m_LocalPosition.y

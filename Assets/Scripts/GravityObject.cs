@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class GravityObject : MonoBehaviour
 {
-    private static List<GravityObject> allGravityObjects = new List<GravityObject>();
+    protected static List<GravityObject> allGravityObjects = new List<GravityObject>();
 
-    private const float G = 0.1f;
+    protected const float G = 0.1f;
 
     public float radius;
     public float radiusGravity;
     public float mass;
+    public bool frozen = false;
     public bool gravityAffected = false;
     public bool moving = false;
 
@@ -38,6 +40,10 @@ public class GravityObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (frozen)
+        {
+            return;
+        }
         if (gravityAffected)
         {
             acceleration = Vector3.zero;
@@ -69,8 +75,7 @@ public class GravityObject : MonoBehaviour
         {
             // We collided!
             Debug.Log("Collided with " + from.name);
-            gravityAffected = false;
-            moving = false;
+            frozen = true;
             return;
             
         }
@@ -88,10 +93,24 @@ public class GravityObject : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, this.radiusGravity);
+        Gizmos.DrawWireSphere(transform.position, radiusGravity);
         
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, this.radius);
+        Gizmos.DrawWireSphere(transform.position, radius);
+        
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position, transform.position + velocity);
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawLine(transform.position, transform.position + acceleration * Time.deltaTime);
+        
+        if (this is Ball)
+        {
+            foreach (var planet in allGravityObjects)
+            {
+                Handles.color = Color.red;
+                Handles.DrawWireDisc(planet.transform.position, Vector3.up, planet.radiusGravity);
+            }
+        }
     }
 
 

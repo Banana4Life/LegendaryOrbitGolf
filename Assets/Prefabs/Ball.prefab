@@ -49,7 +49,7 @@ MonoBehaviour:
   mass: 0
   gravityAffected: 1
   moving: 1
-  velocity: {x: 0, y: 0, z: 10}
+  velocity: {x: 0, y: 0, z: 12}
 --- !u!1 &8264306232524723490
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,6 +12,6 @@ public class Planet : GravityObject
     {
         radius = Random.Range(0.3f, 0.7f);
         mass = Random.Range(2000f, 5000f);
-        radiusGravity = radius * mass / 500;
+        radiusGravity = radius * mass / 400;
     }
 }
