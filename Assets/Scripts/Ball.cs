@@ -35,7 +35,11 @@ public class Ball : GravityObject
         transform.position = planet.transform.position;
         var distance = Random.Range(gravityObject.radius + radius *2, gravityObject.radiusGravity - radius);
         transform.Translate(distance, 0, 0);
-        velocity = Vector3.forward * (float) Math.Sqrt(G * planet.mass * 1 / distance);
+        var a = Random.Range((distance + planet.radius + radius) / 2, (distance + gravityObject.radiusGravity - planet.radius - radius) / 2);
+        var orbitModifier = (2 / distance - 1 / a);
+        velocity = Vector3.forward * (float) Math.Sqrt(G * planet.mass * orbitModifier);
+        
+        
     }
 
 
