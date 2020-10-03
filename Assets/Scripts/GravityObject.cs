@@ -92,16 +92,17 @@ public class GravityObject : MonoBehaviour
     
     void OnDrawGizmosSelected()
     {
+        var pos = transform.position;
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, radiusGravity);
+        Gizmos.DrawWireSphere(pos, radiusGravity);
         
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, radius);
+        Gizmos.DrawWireSphere(pos, radius);
         
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, transform.position + velocity);
+        Gizmos.DrawLine(pos, pos + velocity);
         Gizmos.color = Color.magenta;
-        Gizmos.DrawLine(transform.position, transform.position + acceleration * Time.deltaTime);
+        Gizmos.DrawLine(pos, pos + acceleration * Time.deltaTime);
         
         if (this is Ball)
         {
