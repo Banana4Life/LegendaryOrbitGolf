@@ -313,6 +313,7 @@ GameObject:
   - component: {fileID: 475152630}
   - component: {fileID: 475152629}
   - component: {fileID: 475152628}
+  - component: {fileID: 475152632}
   m_Layer: 0
   m_Name: Stars
   m_TagString: Untagged
@@ -348,6 +349,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollSpeed: 1
   playerCamera: {fileID: 70634107}
+  textureScale: 2
 --- !u!64 &475152629
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -411,6 +413,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 475152626}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &475152632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 475152626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b67802beadb8092ad79448f7f2ca84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 70634107}
 --- !u!1 &1395243075
 GameObject:
   m_ObjectHideFlags: 0
@@ -423,6 +438,7 @@ GameObject:
   - component: {fileID: 1395243079}
   - component: {fileID: 1395243078}
   - component: {fileID: 1395243077}
+  - component: {fileID: 1395243080}
   m_Layer: 0
   m_Name: Black Base
   m_TagString: Untagged
@@ -507,6 +523,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1395243075}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1395243080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1395243075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b67802beadb8092ad79448f7f2ca84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 70634107}
 --- !u!1 &1542772262
 GameObject:
   m_ObjectHideFlags: 0
