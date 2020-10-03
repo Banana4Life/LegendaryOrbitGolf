@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6462776762798888651
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1921766949979253983}
+  - component: {fileID: 1907251964}
+  m_Layer: 0
+  m_Name: PlanetMeshGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1921766949979253983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6462776762798888651}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1907251964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6462776762798888651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c891389222151774f9fb44cd74ef5566, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundMaterial: {fileID: 2100000, guid: 4df8d1aaee8737d46b73a23f8db8f656, type: 2}
+  oceanMaterial: {fileID: 2100000, guid: 297c693a57253724c881afe6c7ac126c, type: 2}
+  numberOfSubdivides: 3
+  numberOfContinents: 5
+  continentSizeMax: 1
+  continentSizeMin: 0.1
+  generateHills: 0
+  generateDeepOceans: 1
+  colorLand:
+    serializedVersion: 2
+    rgba: 65312
+  colorSides:
+    serializedVersion: 2
+    rgba: 65881
+  colorOcean:
+    serializedVersion: 2
+    rgba: 12109834
+  colorDeepOcean:
+    serializedVersion: 2
+    rgba: 10762764
