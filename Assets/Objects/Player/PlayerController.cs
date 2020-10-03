@@ -60,6 +60,12 @@ namespace Objects.Player
             var currentCameraHeight = _cameraTransform.localPosition.y;
             var newCameraHeight = Mathf.Clamp( currentCameraHeight - (Input.mouseScrollDelta.y * zoomSpeed), minZoom, maxZoom);
             _cameraTransform.localPosition = new Vector3(0, newCameraHeight, 0);
+            
+            var space = Input.GetButton("Jump");
+            if (space)
+            {
+                transform.position = transform.parent.GetComponentInChildren<Ball>().transform.position;
+            }
         }
     }
 }
