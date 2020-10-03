@@ -4,6 +4,7 @@ namespace Objects.Player
 {
     public class PlayerController : MonoBehaviour
     {
+        public bool enableEdgeScrolling = true;
         public float speed = 80;
         public float zoomSpeed = 10;
         public float minZoom = 0;
@@ -28,43 +29,85 @@ namespace Objects.Player
             _cameraTransform.position = new Vector3(0, Mathf.Lerp(minZoom, maxZoom, startZoom), 0);
         }
 
-        // Update is called once per frame
-        void Update()
+        private Vector2 DetectEdgeScroll()
         {
+            if (!(enableEdgeScrolling && Screen.fullScreen && !Application.isEditor))
+            {
+                return Vector2.zero;
+            }        
             var mousePos = Input.mousePosition;
-
             float x = 0;
             float z = 0;
-        
-            if (mousePos.x >= 0 && mousePos.x < borderSize || Input.GetKey(KeyCode.A))
+            if (mousePos.x >= 0 && mousePos.x < borderSize)
             {
                 x = -1;
             }
-            if (mousePos.x < Screen.width && mousePos.x >= Screen.width - borderSize || Input.GetKey(KeyCode.D))
+            if (mousePos.x < Screen.width && mousePos.x >= Screen.width - borderSize)
             {
                 x = 1;
             }
 
-            if (mousePos.y >= 0 && mousePos.y < borderSize || Input.GetKey(KeyCode.S))
+            if (mousePos.y >= 0 && mousePos.y < borderSize)
             {
                 z = -1;
             }
 
-            if (mousePos.y < Screen.height && mousePos.y >= Screen.height - borderSize || Input.GetKey(KeyCode.W))
+            if (mousePos.y < Screen.height && mousePos.y >= Screen.height - borderSize)
             {
                 z = 1;
             }
+            
+            return new Vector2(x, z);
+        }
 
-            transform.Translate(new Vector3(x, 0, z).normalized * (speed * Time.deltaTime));
+        Vector2 DetectKeyboardScroll()
+        {
+            float x = 0;
+            float z = 0;
+        
+            if (Input.GetKey(KeyCode.A))
+            {
+                x = -1;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                x = 1;
+            }
+
+            if (Input.GetKey(KeyCode.S))
+            {
+                z = -1;
+            }
+
+            if (Input.GetKey(KeyCode.W))
+            {
+                z = 1;
+            }
+            
+            return new Vector2(x, z);
+        }
+
+        private Vector2 Clamp(Vector2 x)
+        {
+            return new Vector2(Mathf.Clamp(x.x, -1, 1), Mathf.Clamp(x.y, -1, 1));
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+            var scroll = Clamp(DetectEdgeScroll() + DetectKeyboardScroll()).normalized;
+
+            var t = transform;
+            t.Translate(new Vector3(scroll.x, 0, scroll.y) * (speed * Time.deltaTime));
 
             var currentCameraHeight = _cameraTransform.localPosition.y;
             var newCameraHeight = Mathf.Clamp( currentCameraHeight - (Input.mouseScrollDelta.y * zoomSpeed), minZoom, maxZoom);
             _cameraTransform.localPosition = new Vector3(0, newCameraHeight, 0);
-            
-            var space = Input.GetButton("Jump");
-            if (space)
+
+            if (Input.GetButton("Jump"))
             {
-                transform.position = transform.parent.GetComponentInChildren<Ball>().transform.position;
+                t.position = t.parent.GetComponentInChildren<Ball>().transform.position;
             }
         }
     }
