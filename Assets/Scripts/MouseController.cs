@@ -42,11 +42,11 @@ public class MouseController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.white;
-        var transformPosition = ball.transform.position;
         if (holding)
         {
-            // Gizmos.DrawLine(transformPosition, hover);
+            Gizmos.color = Color.white;
+            var transformPosition = ball.transform.position;
+            Gizmos.DrawLine(transformPosition, hover);
         }
     }
 }

@@ -248,9 +248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 280304255}
   ball: {fileID: 1402783231}
-  start: {x: 0, y: 0, z: 0}
   hover: {x: 0, y: 0, z: 0}
-  end: {x: 0, y: 0, z: 0}
 --- !u!4 &2014624691
 Transform:
   m_ObjectHideFlags: 0
@@ -364,6 +362,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 62143561066884160, guid: 8f7a886d8487ac1a6afa98f666727e01, type: 3}
+      propertyPath: radius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 62143561066884160, guid: 8f7a886d8487ac1a6afa98f666727e01, type: 3}
+      propertyPath: radiusGravity
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 857791733385563173, guid: 8f7a886d8487ac1a6afa98f666727e01, type: 3}
       propertyPath: m_Name
       value: Planet
@@ -411,6 +417,10 @@ PrefabInstance:
     - target: {fileID: 2305681302531082468, guid: 8f7a886d8487ac1a6afa98f666727e01, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7501024628379405352, guid: 8f7a886d8487ac1a6afa98f666727e01, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f7a886d8487ac1a6afa98f666727e01, type: 3}

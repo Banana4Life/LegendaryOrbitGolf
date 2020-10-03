@@ -26,6 +26,24 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
+using UnityEditor;
+using UnityEngine;
+using Random = UnityEngine.Random;
+
+[CustomEditor(typeof(PlanetMeshGenerator))]
+class PlanetMeshGeneratorEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+        if (GUILayout.Button("Save Meshes"))
+        {
+            ((PlanetMeshGenerator) target).SaveAsPrefab();
+        }
+    }
+}
+
 // The Planet class is responsible for generating a tiny procedural planet. It does this by subdividing an Icosahedron, then
 // randomly selecting groups of Polygons to extrude outwards. These become the lowlands and hills of the planet, while the
 // unextruded Polygons become the ocean.
@@ -57,6 +75,13 @@ public class PlanetMeshGenerator : MonoBehaviour
     private List<Polygon> _polygons;
     private List<Vector3> _vertices;
 
+    public void SaveAsPrefab()
+    {
+        AssetDatabase.CreateAsset(_groundMesh.GetComponent<MeshFilter>().mesh, "Assets/Prefabs/groundmesh.asset");
+        AssetDatabase.CreateAsset(_oceanMesh.GetComponent<MeshFilter>().mesh, "Assets/Prefabs/oceanmesh.asset");
+        AssetDatabase.SaveAssets();
+        PrefabUtility.SaveAsPrefabAsset(gameObject, "Assets/Prefabs/PlanetThing1.prefab");
+    }
     public void Start()
     {
         // Create an icosahedron, subdivide it three times so that we have plenty of polys
