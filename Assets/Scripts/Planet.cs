@@ -15,5 +15,7 @@ public class Planet : GravityObject
         {
             componentsInChild.transform.localScale = new Vector3(radius*2, radius*2, radius*2);
         }
+
+        GetComponentInChildren<ParticleSystem>().transform.localScale = Vector3.one * radiusGravity / 10;
     }
 }
