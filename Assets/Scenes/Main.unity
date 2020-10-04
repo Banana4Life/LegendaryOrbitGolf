@@ -612,9 +612,9 @@ MonoBehaviour:
   enableEdgeScrolling: 1
   speed: 10
   zoomSpeed: 10
-  minZoom: 0
+  minZoom: 2
   maxZoom: 100
-  startZoom: 0.5
+  startZoom: 0.8
   borderSize: 30
   playerCamera: {fileID: 70634107}
   background: {fileID: 1878062420}

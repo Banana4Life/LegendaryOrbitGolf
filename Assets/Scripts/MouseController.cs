@@ -14,7 +14,7 @@ public class MouseController : MonoBehaviour
     public float holdingTime;
 
     public float maxBumpSpeed = 10;
-    
+
     void Update()
     {
         var mousePosition = Input.mousePosition;
@@ -69,7 +69,7 @@ public class MouseController : MonoBehaviour
             ball.PrepareBump();
             ball.UnFreeze();
         }
-        
+
         if (holding)
         {
             // TODO draw it
@@ -89,9 +89,9 @@ public class MouseController : MonoBehaviour
             // Gizmos.color = Color.yellow;
             // Gizmos.DrawLine(ballPos, hover);
 
-            var pseudoDt = 0.01f;
+            var pseudoDt = 0.001f;
             var v = ball.velocity - bumbSpeed;
-            for (var i = 0; i < 2000; i++)
+            for (var i = 0; i < 20000; i++)
             {
                 var acceleration = Vector3.zero;
                 foreach (var planet in world.allPlanets)
@@ -103,16 +103,17 @@ public class MouseController : MonoBehaviour
                         Gizmos.DrawWireSphere(ballPos, ball.radius);
                         return;
                     }
+
                     acceleration -= GravityObject.CalcGravityAcceleration(delta, ball.mass, planet);
                 }
 
                 v += acceleration * pseudoDt;
                 ballPos += v * pseudoDt;
-                
-                if (i % 10 == 0)
+
+                if (i % 100 == 0)
                 {
                     Handles.color = Color.white;
-                    Handles.DrawWireDisc(ballPos, Vector3.up, ball.radius);    
+                    Handles.DrawWireDisc(ballPos, Vector3.up, ball.radius);
                 }
             }
         }
@@ -130,7 +131,7 @@ public class MouseController : MonoBehaviour
 
         // Sinus curve with min speed
         var p = 8;
-        var triangleMagnitude = (float) (2 * Math.Abs(2 * ((holdingTime / p) - Math.Floor((holdingTime / p) + 0.5)))) * (maxSpeed-minSpeed)/2 + minSpeed;
+        var triangleMagnitude = (float) (2 * Math.Abs(2 * ((holdingTime / p) - Math.Floor((holdingTime / p) + 0.5)))) * (maxSpeed - minSpeed) / 2 + minSpeed;
         var sinusMagnitude = (float) (Math.Sin(0.6 * holdingTime - 1.57) * (maxSpeed - minSpeed) / 2 + (maxSpeed / 2 + minSpeed));
 
         // var magnitude = Math.Min(linearMagnitude, 5);
@@ -140,6 +141,5 @@ public class MouseController : MonoBehaviour
         }
 
         return ballControlledDirection * Math.Min(triangleMagnitude, maxSpeed);
-
     }
 }

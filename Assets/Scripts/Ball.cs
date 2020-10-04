@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -12,10 +11,11 @@ class BallEditor : Editor
         base.OnInspectorGUI();
         if (GUILayout.Button("Place in Orbit"))
         {
-            ((Ball) target).PlaceInOrbit(GameObject.Find("World").GetComponent<World>());
+            ((Ball) target).PlaceInOrbit();
         }
     }
 }
+
 public class Ball : GravityObject
 {
     public ParticleSystem movingParticleSystem;
@@ -25,26 +25,33 @@ public class Ball : GravityObject
 
     private Vector3 savePosition;
     private Vector3 saveVelocity;
-    
+
     public bool inStableOrbit;
+
     public void PlaceInOrbit(World world)
+    {
+        this.world = world;
+        PlaceInOrbit();
+    }
+    public void PlaceInOrbit()
     {
         var planets = world.allPlanets.FindAll(p => p.mass > 0);
         if (planets.Count == 0)
         {
             return;
         }
+
         var planet = planets[Random.Range(0, planets.Count)];
         var gravityObject = planet.GetComponent<GravityObject>();
         transform.position = planet.transform.position;
-        var distance = Random.Range(gravityObject.radius + radius *2, gravityObject.radiusGravity - radius);
+        var distance = Random.Range(gravityObject.radius + radius * 2, gravityObject.radiusGravity - radius);
         transform.Translate(distance, 0, 0);
         var a = Random.Range((distance + planet.radius + radius) / 2, (distance + gravityObject.radiusGravity - planet.radius - radius) / 2);
         var orbitModifier = (2 / distance - 1 / a);
-        velocity = Vector3.forward * (float) Math.Sqrt(G * planet.mass * orbitModifier);
+        velocity = Vector3.forward * Mathf.Sqrt(G * planet.mass * orbitModifier);
         frozen = false;
         inStableOrbit = true;
-        
+
         movingParticleSystem.Clear();
         breakParticleSystem.Clear();
 
@@ -61,7 +68,61 @@ public class Ball : GravityObject
         frozen = true;
         dead = true;
     }
-    protected override void OnUpdate(World world)
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (frozen)
+        {
+            return;
+        }
+
+        if (gravityAffected)
+        {
+            acceleration = Vector3.zero;
+            foreach (var planet in world.allPlanets)
+            {
+                var delta = transform.position - planet.transform.position;
+                if (CheckCollided(delta, radius + planet.radius))
+                {
+                    if (this is Ball ball)
+                    {
+                        ball.OnCollided();
+                    }
+
+                    return;
+                }
+
+                if (CheckCollided(delta, radiusGravity + planet.radiusGravity))
+                {
+                    inOrbitAround = planet;
+                }
+
+                acceleration -= CalcGravityAcceleration(delta, mass, planet);
+            }
+
+            if (inOrbitAround)
+            {
+                var delta = transform.position - inOrbitAround.transform.position;
+                if (!CheckCollided(delta, radiusGravity + inOrbitAround.radiusGravity))
+                {
+                    inOrbitAround = null;
+                }
+            }
+        }
+
+        if (moving)
+        {
+            // ApplyGravity();
+            var dt = (float) Math.Round(Time.deltaTime, 3);
+            velocity += acceleration * dt;
+            transform.Translate(velocity * dt);
+        }
+
+        OnUpdate();
+    }
+
+    private void OnUpdate()
     {
         if (velocity != Vector3.zero)
         {
@@ -77,8 +138,7 @@ public class Ball : GravityObject
         {
             var planetPos = nearbyPlanet.transform.position;
 
-            Vector2 intersection;
-            if (LinesUtil.LineSegmentsIntersection(oldPos, newPos, new Vector2(planetPos.x, planetPos.z), new Vector2(planetPos.x, planetPos.z + nearbyPlanet.radiusGravity), out intersection))
+            if (LinesUtil.LineSegmentsIntersection(oldPos, newPos, new Vector2(planetPos.x, planetPos.z), new Vector2(planetPos.x, planetPos.z + nearbyPlanet.radiusGravity), out Vector2 intersection))
             {
                 if ((orbitPoint - intersection).sqrMagnitude < 0.1)
                 {
@@ -90,6 +150,7 @@ public class Ball : GravityObject
                             savePosition = transform.position;
                             saveVelocity = velocity;
                         }
+
                         inStableOrbit = true;
                     }
                 }
@@ -148,13 +209,10 @@ public class Ball : GravityObject
             transform.position = savePosition;
             velocity = saveVelocity;
         }
-        else
+        else if (inStableOrbit)
         {
-            if (inStableOrbit)
-            {
-                savePosition = transform.position;
-                saveVelocity = velocity;    
-            }
+            savePosition = transform.position;
+            saveVelocity = velocity;
         }
     }
 }

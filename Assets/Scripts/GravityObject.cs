@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class GravityObject : MonoBehaviour
 {
@@ -17,71 +13,16 @@ public class GravityObject : MonoBehaviour
     public bool gravityAffected = false;
     public bool moving = false;
 
-    private Vector3 acceleration = Vector3.zero;
+    protected Vector3 acceleration = Vector3.zero;
     public Vector3 velocity = Vector3.zero;
     
-    public GameObject inOrbitAround;
+    public Planet inOrbitAround;
 
-    private World world;
+    protected World world;
 
     private void Start()
     {
         world = GetComponentInParent<World>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (frozen)
-        {
-            return;
-        }
-        if (gravityAffected)
-        {
-            acceleration = Vector3.zero;
-            foreach (var planet in world.allPlanets)
-            {
-                var delta = transform.position - planet.transform.position;
-                if (CheckCollided(delta, radius + planet.radius))
-                {
-                    if (this is Ball)
-                    {
-                        ((Ball) this).OnCollided();
-                    }
-                    return;
-                }
-
-                if (CheckCollided(delta, radiusGravity + planet.radiusGravity))
-                {
-                    inOrbitAround = planet.gameObject;
-                }
-                acceleration -= CalcGravityAcceleration(delta, mass, planet);
-            }
-            if (inOrbitAround)
-            {
-                var delta = transform.position - inOrbitAround.transform.position;
-                if (!CheckCollided(delta, radiusGravity + inOrbitAround.GetComponent<GravityObject>().radiusGravity))
-                {
-                    inOrbitAround = null;
-                }
-            }
-        }
-        
-
-        if (moving)
-        {
-            // ApplyGravity();
-            var dt = (float) Math.Round(Time.deltaTime, 5);
-            velocity += acceleration * dt;
-            transform.Translate(velocity * dt);
-        }
-        
-        OnUpdate(world);
-
-    }
-
-    protected virtual void OnUpdate(World world)
-    {
     }
 
     public static bool CheckCollided(Vector3 delta, float radii)
@@ -94,10 +35,10 @@ public class GravityObject : MonoBehaviour
     public static Vector3 CalcGravityAcceleration(Vector3 delta, float mass, GravityObject other)
     {
         var distanceSquared = delta.sqrMagnitude;
-        if (distanceSquared < Math.Pow(other.radiusGravity, 2))
+        if (distanceSquared < Mathf.Pow(other.radiusGravity, 2))
         {
             var forceMagnitude = (G * mass * other.mass) / distanceSquared;
-            var distance = (float) Math.Sqrt(distanceSquared);
+            var distance = Mathf.Sqrt(distanceSquared);
             var dax = forceMagnitude * delta.x / distance / mass;
             var daz = forceMagnitude * delta.z / distance / mass;
             
@@ -105,7 +46,6 @@ public class GravityObject : MonoBehaviour
         }
         return Vector3.zero;
     }
-    
     
     void OnDrawGizmosSelected()
     {
@@ -137,6 +77,4 @@ public class GravityObject : MonoBehaviour
             }
         }
     }
-
-
 }
