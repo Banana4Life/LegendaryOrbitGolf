@@ -65,7 +65,7 @@ public class World : MonoBehaviour
                 planet = Instantiate(planetPrefab).GetComponent<Planet>();
                 allPlanets.Add(planet);
             }
-            planet.PlaceRandomly(minPlanetSize, maxPlanetSize, minMass, maxMass, cutOffGravitySpeed);
+            planet.PlaceRandomly(minPlanetSize, maxPlanetSize, minMass, maxMass, cutOffGravitySpeed, planetPrefabs);
             
             var planetObject = planet.gameObject;
             planetObject.transform.parent = planets.transform;
