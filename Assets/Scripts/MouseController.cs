@@ -10,30 +10,38 @@ public class MouseController : MonoBehaviour
 
     public Vector3 hover;
     private bool holding;
-
+    public float holdingTime;
+    
     void Update()
     {
         var mousePosition = Input.mousePosition;
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire3"))
+        {
+            mousePosition.z = mainCamera.transform.position.y;
+            ball.transform.position = mainCamera.ScreenToWorldPoint(mousePosition);
+            ball.velocity = Vector3.zero;
+            ball.frozen = true;
+        }
+        else if (Input.GetButtonDown("Fire1"))
         {
             mousePosition.z = mainCamera.transform.position.y;
             holding = true;
+            holdingTime = 0;
             ball.frozen = true;
-            ball.transform.position = mainCamera.ScreenToWorldPoint(mousePosition);
-            
         }
         else if (Input.GetButtonUp("Fire1"))
         {
             mousePosition.z = mainCamera.transform.position.y;
             hover = mainCamera.ScreenToWorldPoint(mousePosition);
             holding = false;
-            var dv = (ball.transform.position - hover);
+            var dv = -BumbSpeed(ball.transform.position) * 10;
             dv.y = 0;
-            ball.velocity = dv;
+            ball.velocity += dv;
             ball.frozen = false;
         }
         else if (holding)
         {
+            holdingTime += Time.deltaTime;
             mousePosition.z = mainCamera.transform.position.y;
             hover = mainCamera.ScreenToWorldPoint(mousePosition);
             hover.y = 0;
@@ -45,6 +53,11 @@ public class MouseController : MonoBehaviour
             ball.breakParticleSystem.Play();
             // TODO bremssound so düsen/gas entweichend
         }
+        
+        if (holding)
+        {
+            // TODO draw it
+        }
     }
 
     private void OnDrawGizmos()
@@ -52,8 +65,14 @@ public class MouseController : MonoBehaviour
         if (holding)
         {
             Gizmos.color = Color.white;
-            var transformPosition = ball.transform.position;
-            Gizmos.DrawLine(transformPosition, hover);
+            var ballPos = ball.transform.position;
+
+            Gizmos.DrawLine(ballPos, ballPos + BumbSpeed(ballPos) * 3);
         }
+    }
+
+    private Vector3 BumbSpeed(Vector3 ballPos)
+    {
+        return (hover - ballPos).normalized * ((float) Math.Sin(holdingTime * 5 - 1.57) + 1);
     }
 }

@@ -41,8 +41,8 @@ public class Ball : GravityObject
         }
 
         var emissionModule = movingParticleSystem.emission;
-        emissionModule.enabled = velocity.sqrMagnitude > 0.5;
-        
+        emissionModule.enabled = !frozen && velocity.sqrMagnitude > 0.5;
+ 
         
     }
 
