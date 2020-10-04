@@ -21,7 +21,11 @@ public class Ball : GravityObject
     public ParticleSystem breakParticleSystem;
     public void PlaceInOrbit()
     {
-        var planets = World.allPlanets;
+        var planets = World.allPlanets.FindAll(p => p.mass > 0);
+        if (planets.Count == 0)
+        {
+            return;
+        }
         var planet = planets[Random.Range(0, planets.Count)];
         var gravityObject = planet.GetComponent<GravityObject>();
         transform.position = planet.transform.position;
