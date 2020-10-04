@@ -34,9 +34,17 @@ class PlanetMeshGeneratorEditor : Editor
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
-        if (GUILayout.Button("Save Meshes"))
+        if (GUILayout.Button("Save as Prefab"))
         {
             ((PlanetMeshGenerator) target).SaveAsPrefab();
+        }
+        if (GUILayout.Button("Generate Planet"))
+        {
+            ((PlanetMeshGenerator) target).GeneratePlanet();
+        }
+        if (GUILayout.Button("Cleanup"))
+        {
+            ((PlanetMeshGenerator) target).CleanUp();
         }
     }
 }
@@ -63,27 +71,54 @@ public class PlanetMeshGenerator : MonoBehaviour
     public Color32 colorOcean;
     public Color32 colorDeepOcean;
     public string prefabName;
+    public GameObject generatedPlanet;
+    
+    private Mesh oceanMesh; 
+    private Mesh groundMesh;
 
-    public void SaveAsPrefab() 
+    public void GeneratePlanet()
     {
+        CleanUp();
+        
         var vertices = InitVertices();
         var polygons = Subdivide(InitPolygons(), vertices, numberOfSubdivides);
         CalculateNeighbors(polygons);
 
-        Mesh oceanMesh = GetOceanMesh(polygons, vertices, colorOcean);
-        Mesh groundMesh = GetGroundMesh(polygons, vertices, continentSizeMin, continentSizeMax, numberOfContinents, colorLand, colorSides, colorOcean, colorDeepOcean, generateHills, generateDeepOceans);
+        oceanMesh = GetOceanMesh(polygons, vertices, colorOcean);
+        groundMesh = GetGroundMesh(polygons, vertices, continentSizeMin, continentSizeMax, numberOfContinents, colorLand, colorSides, colorOcean, colorDeepOcean, generateHills, generateDeepOceans);
 
+        generatedPlanet = new GameObject(prefabName);
+        CreateGameObject(generatedPlanet, oceanMesh, oceanMaterial);
+        CreateGameObject(generatedPlanet, groundMesh, groundMaterial);
+
+        generatedPlanet.transform.parent = transform.parent;
+        generatedPlanet.name = "Generated Planet - Use 'Save as Prefab' if you like it.";
+    }
+
+    public void CleanUp()
+    {
+        if (generatedPlanet)
+        {
+            generatedPlanet.transform.parent = null;
+            DestroyImmediate(generatedPlanet);
+        }
+
+        oceanMesh = null;
+        groundMesh = null;
+    }
+    public void SaveAsPrefab() 
+    {
         const string prefabsPath = "Assets/Prefabs";
         var worldPath = $"{prefabsPath}/Worlds";
         if (!AssetDatabase.IsValidFolder(worldPath))
         {
-            var guid = AssetDatabase.CreateFolder(prefabsPath, "Worlds");
+            AssetDatabase.CreateFolder(prefabsPath, "Worlds");
         }
         
         var meshPath = $"{worldPath}/Meshs";
         if (!AssetDatabase.IsValidFolder(meshPath))
         {
-            var guid = AssetDatabase.CreateFolder(worldPath, "Meshs");
+            AssetDatabase.CreateFolder(worldPath, "Meshs");
         }
 
         AssetDatabase.CreateAsset(groundMesh, $"{meshPath}/{prefabName}_{groundMesh.name}.mesh");
@@ -92,13 +127,12 @@ public class PlanetMeshGenerator : MonoBehaviour
         
         var prefabPath = $"{worldPath}/{prefabName}.prefab";
         var go = AssetDatabase.LoadAssetAtPath(prefabPath, typeof(GameObject)) as GameObject; 
-        if (go == null || EditorUtility.DisplayDialog($"Update '{prefabName}.prefab'?", "Prefab exists, update?", "Yes", "No")) 
+        if (go == null || EditorUtility.DisplayDialog($"Update '{prefabName}.prefab'?", "Prefab exists, update?", "Yes", "No"))
         {
-            go = new GameObject(prefabName);
-            CreateGameObject(go, oceanMesh, oceanMaterial);
-            CreateGameObject(go, groundMesh, groundMaterial);
+            go = generatedPlanet;
             PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
             DestroyImmediate(go);
+            CleanUp();
         }
     }
 
