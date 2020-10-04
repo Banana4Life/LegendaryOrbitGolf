@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class MouseController : MonoBehaviour
@@ -68,11 +69,31 @@ public class MouseController : MonoBehaviour
             var ballPos = ball.transform.position;
 
             Gizmos.DrawLine(ballPos, ballPos + BumbSpeed(ballPos) * 3);
+
+
+            var pseudoDt = 0.1f;
+            var v = ball.velocity - BumbSpeed(ballPos) * 10;
+            for (var i = 0; i < 100; i++)
+            {
+                var a = Vector3.zero;
+                foreach (var planet in World.allPlanets)
+                {
+                    var delta = ballPos - planet.transform.position;
+                    a -= GravityObject.CalcGravityAcceleration(delta, ball.mass, planet);
+                }
+
+                v += a * pseudoDt;
+                ballPos += v * pseudoDt;
+                
+                Handles.color = Color.white;
+                Handles.DrawWireDisc(ballPos, Vector3.up, ball.radius);
+                
+            }
         }
     }
 
     private Vector3 BumbSpeed(Vector3 ballPos)
     {
-        return (hover - ballPos).normalized * ((float) Math.Sin(holdingTime * 5 - 1.57) + 1);
+        return (hover - ballPos).normalized * ((float) Math.Sin(holdingTime * 4 - 1.57) + 1.2f);
     }
 }

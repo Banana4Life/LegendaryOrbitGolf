@@ -34,7 +34,13 @@ public class GravityObject : MonoBehaviour
             {
                 if (gravityObject != this)
                 {
-                    ApplyGravity(gravityObject);
+                    var distanceVector = transform.position - gravityObject.transform.position;
+                    if (CheckCollided(distanceVector, radius + gravityObject.radius))
+                    {
+                        frozen = true;
+                        return;
+                    }
+                    acceleration -= CalcGravityAcceleration(distanceVector, mass, gravityObject);
                 }
             }
         }
@@ -54,29 +60,26 @@ public class GravityObject : MonoBehaviour
     {
     }
 
-    public void ApplyGravity(GravityObject from)
+    public static bool CheckCollided(Vector3 delta, float radii)
     {
-        var pos = transform.position;
-        var fromPos = from.transform.position;
-        var delta = pos - fromPos;
         var distanceSquared = delta.sqrMagnitude;
-        var distanceBorder = Math.Pow(radius + from.radius, 2);
-        if (distanceBorder > distanceSquared)
-        {
-            // We collided!
-            Debug.Log("Collided with " + from.name);
-            frozen = true;
-            return;
-            
-        }
+        var distanceBorder = Math.Pow(radii, 2);
+        return distanceBorder > distanceSquared;
+    }
 
-        if (distanceSquared < Math.Pow(from.radiusGravity, 2))
+    public static Vector3 CalcGravityAcceleration(Vector3 delta, float mass, GravityObject other)
+    {
+        var distanceSquared = delta.sqrMagnitude;
+        if (distanceSquared < Math.Pow(other.radiusGravity, 2))
         {
-            var forceMagnitude = (G * mass * from.mass) / distanceSquared;
+            var forceMagnitude = (G * mass * other.mass) / distanceSquared;
             var distance = (float) Math.Sqrt(distanceSquared);
-            acceleration.x -= forceMagnitude * delta.x / distance / mass;
-            acceleration.z -= forceMagnitude * delta.z / distance / mass;
+            var dax = forceMagnitude * delta.x / distance / mass;
+            var daz = forceMagnitude * delta.z / distance / mass;
+            
+            return new Vector3(dax, 0, daz);
         }
+        return Vector3.zero;
     }
     
     

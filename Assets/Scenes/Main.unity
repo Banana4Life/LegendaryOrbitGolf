@@ -261,7 +261,24 @@ MonoBehaviour:
   minMass: 20000
   maxMass: 50000
   cutOffGravitySpeed: 250
-  planetPrefabs: []
+  planetPrefabs:
+  - {fileID: 4351483593322345410, guid: 9bf78de175e4fff4eb8b9d3cac63eab0, type: 3}
+  - {fileID: 5304034052924887002, guid: a70f07afc2692994c8f758dfbc0c6c84, type: 3}
+  - {fileID: 39332873025877648, guid: 8ac2fb14af6074641ba219c5ed462c9f, type: 3}
+  - {fileID: 7646002385760036789, guid: fb5d66e5b0516644d8f3db9b142b5e01, type: 3}
+  - {fileID: 2637638057895016403, guid: 5b6b77f0a7381984a81baa29c4581f3e, type: 3}
+  - {fileID: 4474151564209750372, guid: d1a156b4d9e18424a9463ce76cc56d78, type: 3}
+  - {fileID: 6794931665179863217, guid: 3d7273586154f5440a04d676929700b8, type: 3}
+  - {fileID: 2520921813265710564, guid: fbcb24c24ec956f4185db8ad8c509366, type: 3}
+  - {fileID: 3483514539194276861, guid: a838847c8a25d6049b661d707a4dc0f8, type: 3}
+  - {fileID: 5234108561407830750, guid: b67aecfd2ce661842a193a85ba1dbd3e, type: 3}
+  - {fileID: 2351108239303136523, guid: 00059aa55b9637a4ab3c8c7f857892d1, type: 3}
+  - {fileID: 8648339508341331651, guid: 3ad61f0c5a994bb4caed95df14b92153, type: 3}
+  - {fileID: 652055754737624305, guid: 247899516af4f14429c4979d6d42ee9c, type: 3}
+  - {fileID: 7578792736119280675, guid: 058eed1ecb3dadc4d807396f297a1a80, type: 3}
+  - {fileID: 6830064406990098993, guid: 0beeaf4f1eed52d429b08aa33ed9d3e7, type: 3}
+  - {fileID: 344655553287340132, guid: 90ac80a75f48d734f97824a57a3e922b, type: 3}
+  - {fileID: 772800071900727545, guid: 1a2d3e87e1230e148be43a2bfaee8fe0, type: 3}
 --- !u!114 &217738353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,6 +294,7 @@ MonoBehaviour:
   mainCamera: {fileID: 70634107}
   ball: {fileID: 0}
   hover: {x: 0, y: 0, z: 0}
+  holdingTime: 0
 --- !u!1 &462147430
 GameObject:
   m_ObjectHideFlags: 0
