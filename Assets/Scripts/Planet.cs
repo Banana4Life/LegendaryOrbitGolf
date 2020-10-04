@@ -27,7 +27,12 @@ public class Planet : GravityObject
         currentModel = Instantiate(planetPrefabs[Random.Range(0, planetPrefabs.Count)], transform);
         currentModel.AddComponent<PlanetRotate>().rotationSpeed = Random.Range(20, 50);
         currentModel.transform.localScale = Vector3.one * radius;
-        
+
+        foreach (var ps in currentModel.GetComponentsInChildren<ParticleSystem>())
+        {
+            ps.transform.localScale *= radius;
+        }
+
         if (mass > 0)
         {
             gravityWellParticleEmitter.gameObject.SetActive(true);

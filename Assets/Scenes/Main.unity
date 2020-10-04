@@ -278,6 +278,7 @@ MonoBehaviour:
   - {fileID: 7578792736119280675, guid: 058eed1ecb3dadc4d807396f297a1a80, type: 3}
   - {fileID: 6830064406990098993, guid: 0beeaf4f1eed52d429b08aa33ed9d3e7, type: 3}
   - {fileID: 344655553287340132, guid: 90ac80a75f48d734f97824a57a3e922b, type: 3}
+  - {fileID: 6544446769461078140, guid: 2499742a587d4f84d851a01f977fb1dc, type: 3}
   - {fileID: 772800071900727545, guid: 1a2d3e87e1230e148be43a2bfaee8fe0, type: 3}
 --- !u!114 &217738353
 MonoBehaviour:
@@ -295,6 +296,7 @@ MonoBehaviour:
   ball: {fileID: 0}
   hover: {x: 0, y: 0, z: 0}
   holdingTime: 0
+  maxBumpSpeed: 10
 --- !u!1 &462147430
 GameObject:
   m_ObjectHideFlags: 0
