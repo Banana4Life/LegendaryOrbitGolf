@@ -223,6 +223,10 @@ PrefabInstance:
       propertyPath: moveWithTransform
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1006743669524476718, guid: 544c9f4fbde1b1b3fb6eb08a4171418f, type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4021521824622119893, guid: 544c9f4fbde1b1b3fb6eb08a4171418f, type: 3}
       propertyPath: m_Name
       value: PS Surface
@@ -297,6 +301,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6544446769461078141}
     m_Modifications:
+    - target: {fileID: 5149130069800980085, guid: ac423384696c3ba62a52c7533d702000, type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8198874367237610468, guid: ac423384696c3ba62a52c7533d702000, type: 3}
       propertyPath: m_Name
       value: PS Corona
@@ -570,6 +578,10 @@ PrefabInstance:
     - target: {fileID: 717983303481360350, guid: e163626d40b2ff7e38fc7c3d3cda5621, type: 3}
       propertyPath: moveWithTransform
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 717983303481360350, guid: e163626d40b2ff7e38fc7c3d3cda5621, type: 3}
+      propertyPath: scalingMode
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e163626d40b2ff7e38fc7c3d3cda5621, type: 3}

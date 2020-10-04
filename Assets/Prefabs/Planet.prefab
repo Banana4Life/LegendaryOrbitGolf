@@ -69,6 +69,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7382856660091710662, guid: 24ac9bbc6b1bd2d0f8b854bed6d9bebd, type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7892428420176020870, guid: 24ac9bbc6b1bd2d0f8b854bed6d9bebd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -183,6 +187,10 @@ PrefabInstance:
     - target: {fileID: 7421390170779784337, guid: c267651880d287fef97b5202f8e2df7d, type: 3}
       propertyPath: ShapeModule.radius.value
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7421390170779784337, guid: c267651880d287fef97b5202f8e2df7d, type: 3}
+      propertyPath: scalingMode
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c267651880d287fef97b5202f8e2df7d, type: 3}
