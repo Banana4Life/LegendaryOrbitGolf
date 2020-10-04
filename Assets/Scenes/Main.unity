@@ -255,6 +255,7 @@ MonoBehaviour:
   planetPrefab: {fileID: 857791733385563173, guid: 8f7a886d8487ac1a6afa98f666727e01, type: 3}
   ballPrefab: {fileID: 4749227228164643110, guid: 9ac4c14e8b49798a998b139c697acbfd, type: 3}
   planets: {fileID: 462147430}
+  planetCount: 5
 --- !u!114 &217738353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -581,6 +582,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13f7ba5475a5c5d6c91784c1a17f0fd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enableEdgeScrolling: 1
   speed: 10
   zoomSpeed: 10
   minZoom: 0
