@@ -252,15 +252,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cfbca6fc3b8c2ef88737ac606050f5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerCamera: {fileID: 70634107}
   planetPrefab: {fileID: 857791733385563173, guid: 8f7a886d8487ac1a6afa98f666727e01, type: 3}
   ballPrefab: {fileID: 4749227228164643110, guid: 9ac4c14e8b49798a998b139c697acbfd, type: 3}
   planets: {fileID: 462147430}
-  planetCount: 5
   minPlanetSize: 5
   maxPlanetSize: 10
   minMass: 20000
   maxMass: 50000
-  cutOffGravitySpeed: 250
+  cutOffGravitySpeed: 100
   planetPrefabs:
   - {fileID: 4351483593322345410, guid: 9bf78de175e4fff4eb8b9d3cac63eab0, type: 3}
   - {fileID: 5304034052924887002, guid: a70f07afc2692994c8f758dfbc0c6c84, type: 3}
@@ -280,6 +280,7 @@ MonoBehaviour:
   - {fileID: 344655553287340132, guid: 90ac80a75f48d734f97824a57a3e922b, type: 3}
   - {fileID: 6544446769461078140, guid: 2499742a587d4f84d851a01f977fb1dc, type: 3}
   - {fileID: 772800071900727545, guid: 1a2d3e87e1230e148be43a2bfaee8fe0, type: 3}
+  allPlanets: []
 --- !u!114 &217738353
 MonoBehaviour:
   m_ObjectHideFlags: 0

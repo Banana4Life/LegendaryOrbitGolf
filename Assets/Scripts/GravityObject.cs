@@ -71,7 +71,7 @@ public class GravityObject : MonoBehaviour
         if (moving)
         {
             // ApplyGravity();
-            var dt = (float) Math.Round(Time.deltaTime, 2);
+            var dt = (float) Math.Round(Time.deltaTime, 5);
             velocity += acceleration * dt;
             transform.Translate(velocity * dt);
         }

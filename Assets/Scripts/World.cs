@@ -88,15 +88,15 @@ public class World : MonoBehaviour
         if (UnityEngine.Random.Range(0, 5) == 4)
         {
             planet.mass *= -1;
-            planet.gravityWellParticleEmitter.gameObject.SetActive(true);
-            planet.gravityWellParticleEmitter.transform.localScale = Vector3.one * planet.radiusGravity / 10;
-            planet.reverseGravityWellParticleEmitter.gameObject.SetActive(false);
-        }
-        else
-        {
             planet.gravityWellParticleEmitter.gameObject.SetActive(false);
             planet.reverseGravityWellParticleEmitter.gameObject.SetActive(true);
             planet.reverseGravityWellParticleEmitter.transform.localScale = Vector3.one * planet.radiusGravity / 10;
+        }
+        else
+        {
+            planet.gravityWellParticleEmitter.gameObject.SetActive(true);
+            planet.gravityWellParticleEmitter.transform.localScale = Vector3.one * planet.radiusGravity / 10;
+            planet.reverseGravityWellParticleEmitter.gameObject.SetActive(false);
         }
         
         allPlanets.Add(planet);
