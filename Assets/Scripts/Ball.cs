@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -11,7 +12,7 @@ class BallEditor : Editor
         base.OnInspectorGUI();
         if (GUILayout.Button("Place in Orbit"))
         {
-            ((Ball) target).PlaceInOrbit();
+            ((Ball) target).PlaceInOrbit(GameObject.Find("World").GetComponent<World>());
         }
     }
 }
@@ -26,9 +27,9 @@ public class Ball : GravityObject
     private Vector3 saveVelocity;
     
     public bool inStableOrbit;
-    public void PlaceInOrbit()
+    public void PlaceInOrbit(World world)
     {
-        var planets = World.allPlanets.FindAll(p => p.mass > 0);
+        var planets = world.allPlanets.FindAll(p => p.mass > 0);
         if (planets.Count == 0)
         {
             return;
@@ -60,7 +61,7 @@ public class Ball : GravityObject
         frozen = true;
         dead = true;
     }
-    protected override void OnUpdate()
+    protected override void OnUpdate(World world)
     {
         if (velocity != Vector3.zero)
         {
@@ -70,7 +71,7 @@ public class Ball : GravityObject
         var emissionModule = movingParticleSystem.emission;
         emissionModule.enabled = !frozen && velocity.sqrMagnitude > 0.5;
 
-        var nearbyPlanets = World.allPlanets.FindAll(p => (p.transform.position - transform.position).sqrMagnitude < Math.Pow(p.radiusGravity, 2));
+        var nearbyPlanets = world.allPlanets.FindAll(p => (p.transform.position - transform.position).sqrMagnitude < Math.Pow(p.radiusGravity, 2));
         var newPos = new Vector2(transform.position.x, transform.position.z);
         foreach (var nearbyPlanet in nearbyPlanets)
         {

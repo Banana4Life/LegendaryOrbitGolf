@@ -78,6 +78,7 @@ public class MouseController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        var world = GameObject.Find("World").GetComponent<World>();
         if (holding)
         {
             var ballPos = ball.transform.position;
@@ -93,7 +94,7 @@ public class MouseController : MonoBehaviour
             for (var i = 0; i < 2000; i++)
             {
                 var acceleration = Vector3.zero;
-                foreach (var planet in World.allPlanets)
+                foreach (var planet in world.allPlanets)
                 {
                     var delta = ballPos - planet.transform.position;
                     if (GravityObject.CheckCollided(delta, planet.radius + ball.radius))

@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 public class GravityObject : MonoBehaviour
 {
-    protected const float G = 0.1f;
+    public const float G = 0.1f;
 
     public float radius;
     public float radiusGravity;
@@ -22,6 +22,12 @@ public class GravityObject : MonoBehaviour
     
     public GameObject inOrbitAround;
 
+    private World world;
+
+    private void Start()
+    {
+        world = GetComponentInParent<World>();
+    }
 
     // Update is called once per frame
     void Update()
@@ -33,7 +39,7 @@ public class GravityObject : MonoBehaviour
         if (gravityAffected)
         {
             acceleration = Vector3.zero;
-            foreach (var planet in World.allPlanets)
+            foreach (var planet in world.allPlanets)
             {
                 var delta = transform.position - planet.transform.position;
                 if (CheckCollided(delta, radius + planet.radius))
@@ -70,11 +76,11 @@ public class GravityObject : MonoBehaviour
             transform.Translate(velocity * dt);
         }
         
-        OnUpdate();
+        OnUpdate(world);
 
     }
 
-    protected virtual void OnUpdate()
+    protected virtual void OnUpdate(World world)
     {
     }
 
@@ -118,7 +124,7 @@ public class GravityObject : MonoBehaviour
         
         if (this is Ball)
         {
-            foreach (var planet in World.allPlanets)
+            foreach (var planet in world.allPlanets)
             {
                 Handles.color = Color.red;
                 Handles.DrawWireDisc(planet.transform.position, Vector3.up, planet.radiusGravity);
