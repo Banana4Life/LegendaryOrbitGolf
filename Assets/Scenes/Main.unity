@@ -256,6 +256,11 @@ MonoBehaviour:
   ballPrefab: {fileID: 4749227228164643110, guid: 9ac4c14e8b49798a998b139c697acbfd, type: 3}
   planets: {fileID: 462147430}
   planetCount: 5
+  minPlanetSize: 1
+  maxPlanetSize: 2
+  minMass: 20000
+  maxMass: 50000
+  cutOffGravitySpeed: 250
 --- !u!114 &217738353
 MonoBehaviour:
   m_ObjectHideFlags: 0

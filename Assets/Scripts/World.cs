@@ -22,6 +22,11 @@ public class World : MonoBehaviour
     public GameObject planets;
     private GameObject ball;
     public int planetCount = 5;
+    public float minPlanetSize = 1;
+    public float maxPlanetSize = 2;
+    public float minMass = 20000f;
+    public float maxMass = 50000f;
+    public float cutOffGravitySpeed = 250;
     
     public static List<Planet> allPlanets = new List<Planet>();
     
@@ -52,7 +57,7 @@ public class World : MonoBehaviour
                 planet = Instantiate(planetPrefab).GetComponent<Planet>();
                 allPlanets.Add(planet);
             }
-            planet.PlaceRandomly();
+            planet.PlaceRandomly(minPlanetSize, maxPlanetSize, minMass, maxMass, cutOffGravitySpeed);
             
             var planetObject = planet.gameObject;
             planetObject.transform.parent = planets.transform;

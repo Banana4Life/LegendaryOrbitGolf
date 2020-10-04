@@ -3,11 +3,17 @@ using UnityEngine;
 
 public class Planet : GravityObject
 {
-    public void PlaceRandomly()
+    public void PlaceRandomly(float minPlanetSize, float maxPlanetSize, float minMass, float maxMass, float cutOffGravitySpeed)
     {
         transform.position = new Vector3(Random.Range(-50, 50), 0, Random.Range(-50, 50));
-        radius = Random.Range(0.3f, 0.7f);
-        mass = Random.Range(20000f, 50000f);
-        radiusGravity = radius * mass / 1000;
+        radius = Random.Range(minPlanetSize / 2, maxPlanetSize / 2);
+        mass = Random.Range(minMass, maxMass);
+        radiusGravity = 1 / ((cutOffGravitySpeed / mass) / G);
+        
+        
+        foreach (var componentsInChild in transform.GetComponentsInChildren<MeshRenderer>())
+        {
+            componentsInChild.transform.localScale = new Vector3(radius*2, radius*2, radius*2);
+        }
     }
 }

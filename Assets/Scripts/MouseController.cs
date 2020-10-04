@@ -29,7 +29,7 @@ public class MouseController : MonoBehaviour
             holding = false;
             var dv = (ball.transform.position - hover);
             dv.y = 0;
-            ball.velocity += dv;
+            ball.velocity = dv;
             ball.frozen = false;
         }
         else if (holding)
@@ -37,6 +37,13 @@ public class MouseController : MonoBehaviour
             mousePosition.z = mainCamera.transform.position.y;
             hover = mainCamera.ScreenToWorldPoint(mousePosition);
             hover.y = 0;
+        }
+
+        if (Input.GetButtonDown("Fire2"))
+        {
+            ball.velocity *= 0.8f;
+            ball.breakParticleSystem.Play();
+            // TODO bremssound so düsen/gas entweichend
         }
     }
 

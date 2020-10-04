@@ -20,19 +20,6 @@ public class GravityObject : MonoBehaviour
     private Vector3 acceleration = Vector3.zero;
     public Vector3 velocity = Vector3.zero;
 
-    void Start()
-    {
-        Init();
-    }
-
-    protected virtual void Init()
-    {
-        foreach (var componentsInChild in transform.GetComponentsInChildren<MeshRenderer>())
-        {
-            componentsInChild.transform.localScale = new Vector3(radius*2, radius*2, radius*2);
-        }
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -58,6 +45,13 @@ public class GravityObject : MonoBehaviour
             velocity += acceleration * Time.deltaTime;
             transform.Translate(velocity * Time.deltaTime);
         }
+        
+        OnUpdate();
+
+    }
+
+    protected virtual void OnUpdate()
+    {
     }
 
     public void ApplyGravity(GravityObject from)
@@ -92,9 +86,9 @@ public class GravityObject : MonoBehaviour
         
         Handles.color = Color.red;
         Handles.DrawWireDisc(pos, Vector3.up, radiusGravity);
-        
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(pos, radius);
+
+        Handles.color = Color.blue;
+        Handles.DrawWireDisc(pos, Vector3.up, radius);
         
         Gizmos.color = Color.green;
         Gizmos.DrawLine(pos, pos + velocity);

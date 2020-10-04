@@ -17,19 +17,11 @@ class BallEditor : Editor
 }
 public class Ball : GravityObject
 {
-    protected override void Init()
-    {
-        radius = 0.25f;
-        mass = 10;
-        gravityAffected = true;
-        moving = true;
-        base.Init();
-        frozen = true;
-    }
-
+    public ParticleSystem movingParticleSystem;
+    public ParticleSystem breakParticleSystem;
     public void PlaceInOrbit()
     {
-        var planets = World.allPlanets.FindAll(go => go is Planet);
+        var planets = World.allPlanets;
         var planet = planets[Random.Range(0, planets.Count)];
         var gravityObject = planet.GetComponent<GravityObject>();
         transform.position = planet.transform.position;
@@ -39,6 +31,19 @@ public class Ball : GravityObject
         var orbitModifier = (2 / distance - 1 / a);
         velocity = Vector3.forward * (float) Math.Sqrt(G * planet.mass * orbitModifier);
         frozen = false;
+    }
+
+    protected override void OnUpdate()
+    {
+        if (velocity != Vector3.zero)
+        {
+            movingParticleSystem.transform.LookAt(transform.position + velocity);
+        }
+
+        var emissionModule = movingParticleSystem.emission;
+        emissionModule.enabled = velocity.sqrMagnitude > 0.5;
+        
+        
     }
 
 
