@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,6 +13,11 @@ class WorldEditor : Editor
         if (GUILayout.Button("New Universe"))
         {
             ((World) target).NewUniverse();
+        }
+
+        if (GUILayout.Button("Load Planet Prefabs"))
+        {
+            ((World) target).LoadPlanetPrefabs();
         }
     }
 }
@@ -27,6 +33,8 @@ public class World : MonoBehaviour
     public float minMass = 20000f;
     public float maxMass = 50000f;
     public float cutOffGravitySpeed = 250;
+    
+    public List<GameObject> planetPrefabs = new List<GameObject>();
     
     public static List<Planet> allPlanets = new List<Planet>();
     
@@ -72,5 +80,15 @@ public class World : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void LoadPlanetPrefabs()
+    {
+        planetPrefabs.Clear();
+        foreach (var file in Directory.GetFiles("Assets/Prefabs/Worlds", "*.prefab"))
+        {
+            var planet = AssetDatabase.LoadAssetAtPath<GameObject>(file);
+            planetPrefabs.Add(planet);
+        }
     }
 }

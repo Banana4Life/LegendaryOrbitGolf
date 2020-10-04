@@ -261,6 +261,7 @@ MonoBehaviour:
   minMass: 20000
   maxMass: 50000
   cutOffGravitySpeed: 250
+  planetPrefabs: []
 --- !u!114 &217738353
 MonoBehaviour:
   m_ObjectHideFlags: 0
