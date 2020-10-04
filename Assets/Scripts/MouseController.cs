@@ -51,7 +51,10 @@ public class MouseController : MonoBehaviour
             if (Input.GetButton("Fire1")) // Abort with R-Click
             {
                 holding = false;
-                ball.UnFreeze();
+                if (ball.velocity.sqrMagnitude != 0)
+                {
+                    ball.UnFreeze();
+                }
             }
             else
             {
