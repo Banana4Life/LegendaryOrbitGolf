@@ -35,6 +35,9 @@ public class Ball : GravityObject
         var orbitModifier = (2 / distance - 1 / a);
         velocity = Vector3.forward * (float) Math.Sqrt(G * planet.mass * orbitModifier);
         frozen = false;
+        
+        movingParticleSystem.Clear();
+        breakParticleSystem.Clear();
     }
 
     protected override void OnUpdate()
