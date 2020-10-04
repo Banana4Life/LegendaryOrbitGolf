@@ -296,7 +296,7 @@ MonoBehaviour:
   ball: {fileID: 0}
   hover: {x: 0, y: 0, z: 0}
   holdingTime: 0
-  maxBumpSpeed: 10
+  maxBumpSpeed: 15
 --- !u!1 &462147430
 GameObject:
   m_ObjectHideFlags: 0

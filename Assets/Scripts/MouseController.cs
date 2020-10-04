@@ -78,11 +78,11 @@ public class MouseController : MonoBehaviour
             // Gizmos.color = Color.yellow;
             // Gizmos.DrawLine(ballPos, hover);
 
-            var pseudoDt = 0.1f;
+            var pseudoDt = 0.01f;
             var v = ball.velocity - bumbSpeed;
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 2000; i++)
             {
-                var a = Vector3.zero;
+                var acceleration = Vector3.zero;
                 foreach (var planet in World.allPlanets)
                 {
                     var delta = ballPos - planet.transform.position;
@@ -92,15 +92,17 @@ public class MouseController : MonoBehaviour
                         Gizmos.DrawWireSphere(ballPos, ball.radius);
                         return;
                     }
-                    a -= GravityObject.CalcGravityAcceleration(delta, ball.mass, planet);
+                    acceleration -= GravityObject.CalcGravityAcceleration(delta, ball.mass, planet);
                 }
 
-                v += a * pseudoDt;
+                v += acceleration * pseudoDt;
                 ballPos += v * pseudoDt;
                 
-                Handles.color = Color.white;
-                Handles.DrawWireDisc(ballPos, Vector3.up, ball.radius);
-                
+                if (i % 10 == 0)
+                {
+                    Handles.color = Color.white;
+                    Handles.DrawWireDisc(ballPos, Vector3.up, ball.radius);    
+                }
             }
         }
     }
@@ -116,7 +118,7 @@ public class MouseController : MonoBehaviour
         var linearMagnitude = holdingTime * maxSpeed;
 
         // Sinus curve with min speed
-        var sinusMagnitude = (float) (Math.Sin(holdingTime - 1.57) * (maxSpeed - minSpeed) / 2 + (maxSpeed / 2 + minSpeed));
+        var sinusMagnitude = (float) (Math.Sin(0.6 * holdingTime - 1.57) * (maxSpeed - minSpeed) / 2 + (maxSpeed / 2 + minSpeed));
 
         // var magnitude = Math.Min(linearMagnitude, 5);
         if (ballVelocity.sqrMagnitude == 0)

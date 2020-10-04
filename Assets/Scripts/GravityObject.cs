@@ -30,26 +30,24 @@ public class GravityObject : MonoBehaviour
         if (gravityAffected)
         {
             acceleration = Vector3.zero;
-            foreach (var gravityObject in World.allPlanets)
+            foreach (var planet in World.allPlanets)
             {
-                if (gravityObject != this)
+                var delta = transform.position - planet.transform.position;
+                if (CheckCollided(delta, radius + planet.radius))
                 {
-                    var distanceVector = transform.position - gravityObject.transform.position;
-                    if (CheckCollided(distanceVector, radius + gravityObject.radius))
-                    {
-                        frozen = true;
-                        return;
-                    }
-                    acceleration -= CalcGravityAcceleration(distanceVector, mass, gravityObject);
+                    frozen = true;
+                    return;
                 }
+                acceleration -= CalcGravityAcceleration(delta, mass, planet);
             }
         }
 
         if (moving)
         {
             // ApplyGravity();
-            velocity += acceleration * Time.deltaTime;
-            transform.Translate(velocity * Time.deltaTime);
+            var dt = (float) Math.Round(Time.deltaTime, 2);
+            velocity += acceleration * dt;
+            transform.Translate(velocity * dt);
         }
         
         OnUpdate();
