@@ -20,6 +20,11 @@ public class Ball : GravityObject
     public ParticleSystem movingParticleSystem;
     public ParticleSystem breakParticleSystem;
 
+    public bool dead;
+
+    private Vector3 savePosition;
+    private Vector3 saveVelocity;
+    
     public bool inStableOrbit;
     public void PlaceInOrbit()
     {
@@ -41,12 +46,20 @@ public class Ball : GravityObject
         
         movingParticleSystem.Clear();
         breakParticleSystem.Clear();
+
+        savePosition = transform.position;
+        saveVelocity = velocity;
     }
 
     private Vector2 oldPos = Vector2.zero;
     private Vector2 orbitPoint = Vector2.zero;
     public int revolutions = 0;
 
+    public void OnCollided()
+    {
+        frozen = true;
+        dead = true;
+    }
     protected override void OnUpdate()
     {
         if (velocity != Vector3.zero)
@@ -57,7 +70,6 @@ public class Ball : GravityObject
         var emissionModule = movingParticleSystem.emission;
         emissionModule.enabled = !frozen && velocity.sqrMagnitude > 0.5;
 
-
         var nearbyPlanets = World.allPlanets.FindAll(p => (p.transform.position - transform.position).sqrMagnitude < Math.Pow(p.radiusGravity, 2));
         var newPos = new Vector2(transform.position.x, transform.position.z);
         foreach (var nearbyPlanet in nearbyPlanets)
@@ -65,13 +77,18 @@ public class Ball : GravityObject
             var planetPos = nearbyPlanet.transform.position;
 
             Vector2 intersection;
-            if (LineSegmentsIntersection(oldPos, newPos, new Vector2(planetPos.x, planetPos.z), new Vector2(planetPos.x, planetPos.z + nearbyPlanet.radiusGravity), out intersection))
+            if (LinesUtil.LineSegmentsIntersection(oldPos, newPos, new Vector2(planetPos.x, planetPos.z), new Vector2(planetPos.x, planetPos.z + nearbyPlanet.radiusGravity), out intersection))
             {
                 if ((orbitPoint - intersection).sqrMagnitude < 0.1)
                 {
                     revolutions++;
-                    if (revolutions > 3)
+                    if (revolutions > 2)
                     {
+                        if (!inStableOrbit)
+                        {
+                            savePosition = transform.position;
+                            saveVelocity = velocity;
+                        }
                         inStableOrbit = true;
                     }
                 }
@@ -110,6 +127,8 @@ public class Ball : GravityObject
         transform.position = pos;
         velocity = Vector3.zero;
         frozen = true;
+        savePosition = pos;
+        saveVelocity = velocity;
     }
 
     public void EngangeBreaks()
@@ -118,52 +137,23 @@ public class Ball : GravityObject
         breakParticleSystem.Play();
         // TODO sounds
     }
-    
-    // https://github.com/setchi/Unity-LineSegmentsIntersection
-    // The MIT License (MIT)
-    //
-    // Copyright (c) 2017 setchi
-    //
-    // Permission is hereby granted, free of charge, to any person obtaining a copy
-    // of this software and associated documentation files (the "Software"), to deal
-    // in the Software without restriction, including without limitation the rights
-    // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    // copies of the Software, and to permit persons to whom the Software is
-    // furnished to do so, subject to the following conditions:
-    //
-    // The above copyright notice and this permission notice shall be included in all
-    // copies or substantial portions of the Software.
-    //
-    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    // SOFTWARE.
-    public static bool LineSegmentsIntersection(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4, out Vector2 intersection)
+
+    public void PrepareBump()
     {
-        intersection = Vector2.zero;
-
-        var d = (p2.x - p1.x) * (p4.y - p3.y) - (p2.y - p1.y) * (p4.x - p3.x);
-
-        if (d == 0.0f)
+        Freeze();
+        if (dead)
         {
-            return false;
+            dead = false;
+            transform.position = savePosition;
+            velocity = saveVelocity;
         }
-
-        var u = ((p3.x - p1.x) * (p4.y - p3.y) - (p3.y - p1.y) * (p4.x - p3.x)) / d;
-        var v = ((p3.x - p1.x) * (p2.y - p1.y) - (p3.y - p1.y) * (p2.x - p1.x)) / d;
-
-        if (u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f)
+        else
         {
-            return false;
+            if (inStableOrbit)
+            {
+                savePosition = transform.position;
+                saveVelocity = velocity;    
+            }
         }
-
-        intersection.x = p1.x + u * (p2.x - p1.x);
-        intersection.y = p1.y + u * (p2.y - p1.y);
-
-        return true;
     }
-
 }

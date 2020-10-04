@@ -29,7 +29,7 @@ public class MouseController : MonoBehaviour
             mousePosition.z = mainCamera.transform.position.y;
             holding = true;
             holdingTime = 0;
-            ball.Freeze();
+            ball.PrepareBump();
         }
         else if (Input.GetButtonUp("Fire1") && holding)
         {
@@ -57,7 +57,14 @@ public class MouseController : MonoBehaviour
             {
                 ball.EngangeBreaks();
             }
-            
+        }
+
+
+        if (Input.GetButtonDown("BackSpace"))
+        {
+            ball.dead = true;
+            ball.PrepareBump();
+            ball.UnFreeze();
         }
         
         if (holding)
@@ -118,7 +125,7 @@ public class MouseController : MonoBehaviour
         var linearMagnitude = holdingTime * maxSpeed;
 
         // Sinus curve with min speed
-        var p = 5;
+        var p = 8;
         var triangleMagnitude = (float) (2 * Math.Abs(2 * ((holdingTime / p) - Math.Floor((holdingTime / p) + 0.5)))) * (maxSpeed-minSpeed)/2 + minSpeed;
         var sinusMagnitude = (float) (Math.Sin(0.6 * holdingTime - 1.57) * (maxSpeed - minSpeed) / 2 + (maxSpeed / 2 + minSpeed));
 

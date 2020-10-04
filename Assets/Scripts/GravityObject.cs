@@ -19,6 +19,9 @@ public class GravityObject : MonoBehaviour
 
     private Vector3 acceleration = Vector3.zero;
     public Vector3 velocity = Vector3.zero;
+    
+    public GameObject inOrbitAround;
+
 
     // Update is called once per frame
     void Update()
@@ -35,12 +38,29 @@ public class GravityObject : MonoBehaviour
                 var delta = transform.position - planet.transform.position;
                 if (CheckCollided(delta, radius + planet.radius))
                 {
-                    frozen = true;
+                    if (this is Ball)
+                    {
+                        ((Ball) this).OnCollided();
+                    }
                     return;
+                }
+
+                if (CheckCollided(delta, radiusGravity + planet.radiusGravity))
+                {
+                    inOrbitAround = planet.gameObject;
                 }
                 acceleration -= CalcGravityAcceleration(delta, mass, planet);
             }
+            if (inOrbitAround)
+            {
+                var delta = transform.position - inOrbitAround.transform.position;
+                if (!CheckCollided(delta, radiusGravity + inOrbitAround.GetComponent<GravityObject>().radiusGravity))
+                {
+                    inOrbitAround = null;
+                }
+            }
         }
+        
 
         if (moving)
         {
@@ -102,6 +122,12 @@ public class GravityObject : MonoBehaviour
             {
                 Handles.color = Color.red;
                 Handles.DrawWireDisc(planet.transform.position, Vector3.up, planet.radiusGravity);
+            }
+            
+            Gizmos.color = Color.gray;
+            if (inOrbitAround)
+            {
+                Gizmos.DrawLine(transform.position, inOrbitAround.transform.position);
             }
         }
     }
