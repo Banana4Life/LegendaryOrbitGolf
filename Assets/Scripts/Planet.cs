@@ -13,11 +13,7 @@ public class Planet : GravityObject
 
         var planetModel = Instantiate(planetPrefabs[Random.Range(0, planetPrefabs.Count)], transform);
         planetModel.AddComponent<PlanetRotate>().rotationSpeed = Random.Range(20, 50);
-        foreach (var componentsInChild in transform.GetComponentsInChildren<MeshRenderer>())
-        {
-            componentsInChild.transform.localScale = new Vector3(radius*2, radius*2, radius*2);
-        }
-
+        planetModel.transform.localScale = Vector3.one * radius;
         GetComponentInChildren<ParticleSystem>().transform.localScale = Vector3.one * radiusGravity / 10;
     }
 }
