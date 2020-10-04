@@ -12,6 +12,8 @@ public class MouseController : MonoBehaviour
     public Vector3 hover;
     private bool holding;
     public float holdingTime;
+
+    public float maxBumpSpeed = 10;
     
     void Update()
     {
@@ -20,25 +22,21 @@ public class MouseController : MonoBehaviour
         {
             mousePosition.z = mainCamera.transform.position.y;
             ball.transform.position = mainCamera.ScreenToWorldPoint(mousePosition);
-            ball.velocity = Vector3.zero;
-            ball.frozen = true;
+            ball.CheatJumpTo(mainCamera.ScreenToWorldPoint(mousePosition));
         }
         else if (Input.GetButtonDown("Fire1"))
         {
             mousePosition.z = mainCamera.transform.position.y;
             holding = true;
             holdingTime = 0;
-            ball.frozen = true;
+            ball.Freeze();
         }
-        else if (Input.GetButtonUp("Fire1"))
+        else if (Input.GetButtonUp("Fire1") && holding)
         {
             mousePosition.z = mainCamera.transform.position.y;
             hover = mainCamera.ScreenToWorldPoint(mousePosition);
             holding = false;
-            var dv = -BumbSpeed(ball.transform.position) * 10;
-            dv.y = 0;
-            ball.velocity += dv;
-            ball.frozen = false;
+            ball.Bump(-BumpSpeed(ball.transform.position, ball.velocity, maxBumpSpeed));
         }
         else if (holding)
         {
@@ -50,9 +48,16 @@ public class MouseController : MonoBehaviour
 
         if (Input.GetButtonDown("Fire2"))
         {
-            ball.velocity *= 0.8f;
-            ball.breakParticleSystem.Play();
-            // TODO bremssound so düsen/gas entweichend
+            if (Input.GetButton("Fire1")) // Abort with R-Click
+            {
+                holding = false;
+                ball.UnFreeze();
+            }
+            else
+            {
+                ball.EngangeBreaks();
+            }
+            
         }
         
         if (holding)
@@ -65,20 +70,28 @@ public class MouseController : MonoBehaviour
     {
         if (holding)
         {
-            Gizmos.color = Color.white;
             var ballPos = ball.transform.position;
 
-            Gizmos.DrawLine(ballPos, ballPos + BumbSpeed(ballPos) * 3);
-
+            var bumbSpeed = BumpSpeed(ballPos, ball.velocity, maxBumpSpeed);
+            // Gizmos.color = Color.white;
+            // Gizmos.DrawLine(ballPos, ballPos + bumbSpeed * 3);
+            // Gizmos.color = Color.yellow;
+            // Gizmos.DrawLine(ballPos, hover);
 
             var pseudoDt = 0.1f;
-            var v = ball.velocity - BumbSpeed(ballPos) * 10;
+            var v = ball.velocity - bumbSpeed;
             for (var i = 0; i < 100; i++)
             {
                 var a = Vector3.zero;
                 foreach (var planet in World.allPlanets)
                 {
                     var delta = ballPos - planet.transform.position;
+                    if (GravityObject.CheckCollided(delta, planet.radius + ball.radius))
+                    {
+                        Gizmos.color = Color.red;
+                        Gizmos.DrawWireSphere(ballPos, ball.radius);
+                        return;
+                    }
                     a -= GravityObject.CalcGravityAcceleration(delta, ball.mass, planet);
                 }
 
@@ -92,8 +105,26 @@ public class MouseController : MonoBehaviour
         }
     }
 
-    private Vector3 BumbSpeed(Vector3 ballPos)
+    private Vector3 BumpSpeed(Vector3 ballPos, Vector3 ballVelocity, float maxSpeed)
     {
-        return (hover - ballPos).normalized * ((float) Math.Sin(holdingTime * 4 - 1.57) + 1.2f);
+        var minSpeed = 1.2f;
+
+        var playerControlledDirection = -(hover - ballPos).normalized;
+        var ballControlledDirection = -ballVelocity.normalized;
+
+        // Linear curve
+        var linearMagnitude = holdingTime * maxSpeed;
+
+        // Sinus curve with min speed
+        var sinusMagnitude = (float) (Math.Sin(holdingTime - 1.57) * (maxSpeed - minSpeed) / 2 + (maxSpeed / 2 + minSpeed));
+
+        // var magnitude = Math.Min(linearMagnitude, 5);
+        if (ballVelocity.sqrMagnitude == 0)
+        {
+            return playerControlledDirection * Math.Min(minSpeed + linearMagnitude, maxSpeed);
+        }
+
+        return ballControlledDirection * Math.Min(sinusMagnitude, maxSpeed);
+
     }
 }
