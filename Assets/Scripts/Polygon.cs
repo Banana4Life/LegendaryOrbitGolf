@@ -29,29 +29,29 @@ using UnityEngine;
 public class Polygon
 {
     public const int VertexCount = 3;
-    public readonly List<int> m_Vertices; // Indices of the three vertices that make up this Polygon.
-    public readonly List<Vector2> m_UVs; // The uv coordinates we want to apply at each vertex.
-    public readonly List<Polygon> m_Neighbors; // Links to this Polygon's three neighbors.
-    public Color32 m_Color; // What color do we want this poly to be?
+    public readonly List<int> Vertices; // Indices of the three vertices that make up this Polygon.
+    public readonly List<Vector2> UVs; // The uv coordinates we want to apply at each vertex.
+    public readonly List<Polygon> Neighbors; // Links to this Polygon's three neighbors.
+    public Color32 Color; // What color do we want this poly to be?
 
     public Polygon(int a, int b, int c)
     {
-        m_Vertices = new List<int> { a, b, c };
-        m_Neighbors = new List<Polygon>();
-        m_UVs = new List<Vector2> { Vector2.zero, Vector2.zero, Vector2.zero };
+        Vertices = new List<int> { a, b, c };
+        Neighbors = new List<Polygon>();
+        UVs = new List<Vector2> { Vector2.zero, Vector2.zero, Vector2.zero };
 
         // Hot Pink is an excellent default color because you'll notice instantly if 
         // you forget to set it to something else.
-        m_Color = new Color32(255, 0, 255, 255);
+        Color = new Color32(255, 0, 255, 255);
     }
 
     // IsNeighborOf is a convenience function to calculate if two polys share an edge.
     // We usually just need to calculate this once, and then we can use the m_Neighbors list
     // that's stored in each Polygon.
 
-    public bool IsNeighborOf(Polygon otherPoly)
+    public static bool IsNeighborOf(IEnumerable<int> vertices, Polygon otherPoly)
     {
-        int sharedVertices = m_Vertices.Count(vertex => otherPoly.m_Vertices.Contains(vertex));
+        int sharedVertices = vertices.Count(vertex => otherPoly.Vertices.Contains(vertex));
 
         // A polygon and its neighbor will share exactly
         // two vertices. Ergo, if this poly shares two
@@ -61,16 +61,16 @@ public class Polygon
     }
 
     // As we build the planet, we'll insert strips of Polygons between others.
-    // This means we need to replace the old neighbors in their m_Neighbors list
+    // This means we need to replace the old neighbors in their Neighbors list
     // with the new ones we are inserting. This simple function does that.
 
-    public void ReplaceNeighbor(Polygon oldNeighbor, Polygon newNeighbor)
+    public static void ReplacePolygon(IList<Polygon> polygons, Polygon oldNeighbor, Polygon newNeighbor)
     {
-        for (int i = 0; i < m_Neighbors.Count; i++)
+        for (int i = 0; i < polygons.Count; i++)
         {
-            if (oldNeighbor == m_Neighbors[i])
+            if (oldNeighbor == polygons[i])
             {
-                m_Neighbors[i] = newNeighbor;
+                polygons[i] = newNeighbor;
                 return;
             }
         }
@@ -88,21 +88,24 @@ public class PolySet : HashSet<Polygon>
     // If this PolySet was created by stitching existing Polys, then we store the index of the
     // last original vertex before we did the stitching. This way we can tell new vertices apart
     // from old ones.
-    public int m_StitchedVertexThreshold = -1;
+    public int StitchedVertexThreshold = -1;
 
     //Given a set of Polys, calculate the set of Edges
     //that surround them.
 
-    public EdgeSet CreateEdgeSet()
+    public static EdgeSet CreateEdgeSet(HashSet<Polygon> polygons)
     {
         var edgeSet = new EdgeSet();
 
-        foreach (Polygon poly in this)
+        foreach (Polygon poly in polygons)
         {
-            foreach (Polygon neighbor in poly.m_Neighbors)
+            foreach (Polygon neighbor in poly.Neighbors)
             {
-                if (this.Contains(neighbor))
+                if (polygons.Contains(neighbor))
+                {
                     continue;
+                }
+
                 // If our neighbor isn't in our PolySet, then
                 // the edge between us and our neighbor is one
                 // of the edges of this PolySet.
@@ -117,18 +120,20 @@ public class PolySet : HashSet<Polygon>
     // RemoveEdges - Remove any poly from this set that borders the edge of the set, including those that just
     // touch the edge with a single vertex. The PolySet could be empty after this operation.
 
-    public PolySet RemoveEdges()
+    public static PolySet RemoveEdges(HashSet<Polygon> polygons)
     {
         var newSet = new PolySet();
 
-        var edgeSet = CreateEdgeSet();
+        var edgeSet = CreateEdgeSet(polygons);
 
-        var edgeVertices = edgeSet.GetUniqueVertices();
+        var edgeVertices = EdgeSet.GetUniqueVertices(edgeSet);
 
-        foreach (Polygon poly in this)
+        foreach (Polygon poly in polygons)
         {
-            if (poly.m_Vertices.Any(vertices => edgeVertices.Contains(vertices)))
+            if (poly.Vertices.Any(vertices => edgeVertices.Contains(vertices)))
+            {
                 continue;
+            }
 
             newSet.Add(poly);
         }
@@ -139,12 +144,12 @@ public class PolySet : HashSet<Polygon>
     // GetUniqueVertices calculates a list of the vertex indices used by these Polygons
     // with no duplicates.
 
-    public List<int> GetUniqueVertices()
+    public static IList<int> GetUniqueVertices(HashSet<Polygon> polygons)
     {
         var verts = new List<int>();
-        foreach (Polygon poly in this)
+        foreach (Polygon poly in polygons)
         {
-            foreach (int vert in poly.m_Vertices)
+            foreach (int vert in poly.Vertices)
             {
                 if (!verts.Contains(vert))
                 {
@@ -167,22 +172,22 @@ public class PolySet : HashSet<Polygon>
         {
             for (int i = 0; i < Polygon.VertexCount; i++)
             {
-                float ambientOcclusionTerm = (poly.m_Vertices[i] > m_StitchedVertexThreshold) ? aoForNewVerts : aoForOriginalVerts;
+                float ambientOcclusionTerm = (poly.Vertices[i] > StitchedVertexThreshold) ? aoForNewVerts : aoForOriginalVerts;
 
-                Vector2 uv = poly.m_UVs[i];
+                Vector2 uv = poly.UVs[i];
                 uv.y = ambientOcclusionTerm;
-                poly.m_UVs[i] = uv;
+                poly.UVs[i] = uv;
             }
         }
     }
 
     // Apply Color to all our Polys. This is a pretty trivial function, but it makes the code a little more readable.
 
-    public void ApplyColor(Color32 c)
+    public static void ApplyColor(HashSet<Polygon> polygons, Color32 c)
     {
-        foreach (Polygon poly in this)
+        foreach (Polygon poly in polygons)
         {
-            poly.m_Color = c;
+            poly.Color = c;
         }
     }
 }

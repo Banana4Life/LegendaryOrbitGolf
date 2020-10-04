@@ -35,34 +35,33 @@ using UnityEngine;
 
 public class Edge
 {
-    public readonly Polygon m_InnerPoly; //The Poly that's inside the Edge. The one we'll be extruding or insetting.
-    public readonly Polygon m_OuterPoly; //The Poly that's outside the Edge. We'll be leaving this one alone.
+    public readonly Polygon InnerPoly; //The Poly that's inside the Edge. The one we'll be extruding or insetting.
+    public readonly Polygon OuterPoly; //The Poly that's outside the Edge. We'll be leaving this one alone.
 
-    public readonly List<int> m_OuterVerts; //The vertices along this edge, according to the Outer poly.
-    public readonly List<int> m_InnerVerts; //The vertices along this edge, according to the Inner poly.
+    public readonly List<int> OuterVerts; //The vertices along this edge, according to the Outer poly.
+    public readonly List<int> InnerVerts; //The vertices along this edge, according to the Inner poly.
 
-    public readonly int m_InwardDirectionVertex; //The third vertex of the inner polygon. That is, the one that doesn't touch this edge.
+    public readonly int InwardDirectionVertex; //The third vertex of the inner polygon. That is, the one that doesn't touch this edge.
 
     public Edge(Polygon innerPoly, Polygon outerPoly)
     {
-        m_InnerPoly = innerPoly;
-        m_OuterPoly = outerPoly;
-        m_OuterVerts = new List<int>(2);
-        m_InnerVerts = new List<int>(2);
+        InnerPoly = innerPoly;
+        OuterPoly = outerPoly;
+        InnerVerts = new List<int>(2);
 
         // Examine all three of the inner poly's vertices. Add the vertices that it shares with the
         // outer poly to the m_InnerVerts list. We also make a note of which vertex wasn't on the edge
         // and store it for later in m_InwardDirectionVertex.
 
-        foreach (int vertex in innerPoly.m_Vertices)
+        foreach (int vertex in innerPoly.Vertices)
         {
-            if (outerPoly.m_Vertices.Contains(vertex))
+            if (outerPoly.Vertices.Contains(vertex))
             {
-                m_InnerVerts.Add(vertex);
+                InnerVerts.Add(vertex);
             }
             else
             {
-                m_InwardDirectionVertex = vertex;
+                InwardDirectionVertex = vertex;
             }
         }
 
@@ -80,17 +79,17 @@ public class Edge
         // The formula above will give us [1st inner poly vertex, 3rd inner poly vertex] though, so
         // we check for that situation and reverse the vertices.
 
-        if (m_InnerVerts[0] == innerPoly.m_Vertices[0] && m_InnerVerts[1] == innerPoly.m_Vertices[2])
+        if (InnerVerts[0] == innerPoly.Vertices[0] && InnerVerts[1] == innerPoly.Vertices[2])
         {
-            int temp = m_InnerVerts[0];
-            m_InnerVerts[0] = m_InnerVerts[1];
-            m_InnerVerts[1] = temp;
+            int temp = InnerVerts[0];
+            InnerVerts[0] = InnerVerts[1];
+            InnerVerts[1] = temp;
         }
 
         // No manipulations have happened yet, so the outer and inner Polygons still share the same vertices.
         // We can instantiate m_OuterVerts as a copy of m_InnerVerts.
 
-        m_OuterVerts = new List<int>(m_InnerVerts);
+        OuterVerts = new List<int>(InnerVerts);
     }
 }
 
@@ -102,13 +101,13 @@ public class EdgeSet : HashSet<Edge>
     // Split - Given a list of original vertex indices and a list of replacements,
     //         update m_InnerVerts to use the new replacement vertices.
 
-    public void Split(List<int> oldVertices, List<int> newVertices)
+    public void Split(IList<int> oldVertices, IList<int> newVertices)
     {
         foreach (Edge edge in this)
         {
             for (int i = 0; i < 2; i++)
             {
-                edge.m_InnerVerts[i] = newVertices[oldVertices.IndexOf(edge.m_OuterVerts[i])];
+                edge.InnerVerts[i] = newVertices[oldVertices.IndexOf(edge.OuterVerts[i])];
             }
         }
     }
@@ -116,11 +115,11 @@ public class EdgeSet : HashSet<Edge>
     // GetUniqueVertices - Get a list of all the vertices referenced
     // in this edge loop, with no duplicates.
 
-    public List<int> GetUniqueVertices()
+    public static IList<int> GetUniqueVertices(HashSet<Edge> edges)
     {
         var vertices = new List<int>();
 
-        foreach (int vert in this.SelectMany(edge => edge.m_OuterVerts.Where(vert => !vertices.Contains(vert))))
+        foreach (int vert in edges.SelectMany(edge => edge.OuterVerts.Where(vert => !vertices.Contains(vert))))
         {
             vertices.Add(vert);
         }
@@ -132,24 +131,24 @@ public class EdgeSet : HashSet<Edge>
     // points most deeply inwards. That's the average of the inward direction of each edge
     // that the vertex appears on.
 
-    public Dictionary<int, Vector3> GetInwardDirections(List<Vector3> vertexPositions)
+    public static Dictionary<int, Vector3> GetInwardDirections(HashSet<Edge> edges, IList<Vector3> vertexPositions)
     {
         var inwardDirections = new Dictionary<int, Vector3>();
         var numContributions = new Dictionary<int, int>();
 
-        foreach (Edge edge in this)
+        foreach (Edge edge in edges)
         {
-            Vector3 innerVertexPosition = vertexPositions[edge.m_InwardDirectionVertex];
+            Vector3 innerVertexPosition = vertexPositions[edge.InwardDirectionVertex];
 
-            Vector3 edgePosA = vertexPositions[edge.m_InnerVerts[0]];
-            Vector3 edgePosB = vertexPositions[edge.m_InnerVerts[1]];
+            Vector3 edgePosA = vertexPositions[edge.InnerVerts[0]];
+            Vector3 edgePosB = vertexPositions[edge.InnerVerts[1]];
             Vector3 edgeCenter = Vector3.Lerp(edgePosA, edgePosB, 0.5f);
 
             Vector3 innerVector = (innerVertexPosition - edgeCenter).normalized;
 
             for (int i = 0; i < 2; i++)
             {
-                int edgeVertex = edge.m_InnerVerts[i];
+                int edgeVertex = edge.InnerVerts[i];
 
                 if (inwardDirections.ContainsKey(edgeVertex))
                 {
