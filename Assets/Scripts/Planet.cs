@@ -19,7 +19,7 @@ public class Planet : GravityObject
         mass = Random.Range(minMass, maxMass);
         radiusGravity = 1 / ((cutOffGravitySpeed / mass) / G);
         
-        if (Random.Range(0, 5) > 4) // repulsing?
+        if (Random.Range(0, 5) == 4) // repulsing?
         {
             mass = -mass;
         }
