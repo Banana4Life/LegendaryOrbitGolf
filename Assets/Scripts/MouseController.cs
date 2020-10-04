@@ -118,6 +118,8 @@ public class MouseController : MonoBehaviour
         var linearMagnitude = holdingTime * maxSpeed;
 
         // Sinus curve with min speed
+        var p = 5;
+        var triangleMagnitude = (float) (2 * Math.Abs(2 * ((holdingTime / p) - Math.Floor((holdingTime / p) + 0.5)))) * (maxSpeed-minSpeed)/2 + minSpeed;
         var sinusMagnitude = (float) (Math.Sin(0.6 * holdingTime - 1.57) * (maxSpeed - minSpeed) / 2 + (maxSpeed / 2 + minSpeed));
 
         // var magnitude = Math.Min(linearMagnitude, 5);
@@ -126,7 +128,7 @@ public class MouseController : MonoBehaviour
             return playerControlledDirection * Math.Min(minSpeed + linearMagnitude, maxSpeed);
         }
 
-        return ballControlledDirection * Math.Min(sinusMagnitude, maxSpeed);
+        return ballControlledDirection * Math.Min(triangleMagnitude, maxSpeed);
 
     }
 }
