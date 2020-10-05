@@ -50,11 +50,16 @@ MonoBehaviour:
   radiusGravity: 0
   mass: 10
   frozen: 1
-  gravityAffected: 1
-  moving: 1
   velocity: {x: 0, y: 0, z: 0}
+  inOrbitAround: {fileID: 0}
   movingParticleSystem: {fileID: 8433558184093444046}
   breakParticleSystem: {fileID: 6414866999223499510}
+  dead: 0
+  inStableOrbit: 0
+  world: {fileID: 0}
+  minBumpSpeed: 0.5
+  maxBumpSpeed: 15
+  engageBreaksSound: {fileID: 0}
 --- !u!1 &8264306232524723490
 GameObject:
   m_ObjectHideFlags: 0
@@ -115,7 +120,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: ec538cd8539b8c50eb85a08929893ca7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

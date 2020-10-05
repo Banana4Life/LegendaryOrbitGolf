@@ -255,11 +255,15 @@ public class Ball : GravityObject
 
     private void DrawTrajectory(Trajectory trajectory, Color color, Color colorStable, LineRenderer go)
     {
+        LineRenderer lr = go.GetComponent<LineRenderer>();
+        
         if (trajectory == null || trajectory.isEmpty())
         {
+            lr.enabled = false;
             return;
         }
-        LineRenderer lr = go.GetComponent<LineRenderer>();
+
+        lr.enabled = true;
         
         lr.material = new Material(Shader.Find("Sprites/Default"));
         lr.startColor = trajectory.isStable ? colorStable : color;
