@@ -40,12 +40,19 @@ public class World : MonoBehaviour
     public List<GameObject> planetPrefabs = new List<GameObject>();
 
     public List<Planet> allPlanets = new List<Planet>();
-
+    public List<Planet> parPlanets = new List<Planet>();
+    public Planet startPlanet;
+    public Planet goalPlanet;
+    
     private const float GridCellSize = 5f;
+    private const float PlanetClearance = GridCellSize / 2f;
     private readonly HashSet<long> _usedGridSlots = new HashSet<long>();
         
     public int attractorsPlaced;
     public int repulsorsPlaced;
+    public int goalDistance = 20;
+    public float goalMass = 50000f;
+    public float goalSize = 2;
     
     // Start is called before the first frame update
     void Start()
@@ -65,44 +72,60 @@ public class World : MonoBehaviour
         
         attractorsPlaced = 0;
         repulsorsPlaced = 0;
-        GeneratePlanets();
+
+        startPlanet = GenerateStartPlanet();
+        var startPos = startPlanet.transform.position;
+
+        goalPlanet = GenerateGoalPlanet();
+        var goalPos = goalPlanet.transform.position;
+
+        var minX = Mathf.Min(startPos.x, goalPos.x);
+        var minZ = Mathf.Min(startPos.z, goalPos.z);
+
+        var maxX = Mathf.Max(startPos.x, goalPos.x);
+        var maxZ = Mathf.Max(startPos.z, goalPos.z);
+
+        var extraArea = Vector3.Distance(goalPos, startPos) * 0.5f;
+
+        GeneratePlanets(new Vector3(minX - extraArea, 0, minZ - extraArea),
+            new Vector3(maxX + extraArea, 0, maxZ + extraArea));
+        
+        CollectParPlanets(startPlanet, goalPlanet);
     }
 
-    void GenerateRandomPlanetAt(int x, int z, float radius, float mass, float gravityRadius)
+    void CollectParPlanets(Planet start, Planet goal)
     {
-        Planet planet = Instantiate(planetPrefab).GetComponent<Planet>();
+        var startPos = start.transform.position;
+        var goalPos = goal.transform.position;
+        var dir = goalPos - startPos;
 
-        planet.radius = radius;
-        planet.mass = mass;
-        planet.radiusGravity = gravityRadius;
-
-        var planetObject = planet.gameObject;
-        planetObject.transform.parent = planets.transform;
-        planetObject.name = $"Planet {x} {z}";
-        Vector3 pos = Helper.WorldPosition(x, 0, z, GridCellSize);
-        planetObject.transform.position = pos + Helper.ToVector3(Random.insideUnitCircle * Random.Range(0, GridCellSize));
-
-        var currentModel = Instantiate(planetPrefabs[Random.Range(0, planetPrefabs.Count)], planet.transform);
-        currentModel.AddComponent<PlanetRotate>().rotationSpeed = Random.Range(20, 50);
-        currentModel.transform.localScale = Vector3.one * planet.radius;
-
-        if (Random.value < repulsorProbability)
+        bool Touches(Vector3 point, float radius)
         {
-            repulsorsPlaced++;
-            planet.mass *= -1;
-            planet.gravityWellParticleEmitter.gameObject.SetActive(false);
-            planet.reverseGravityWellParticleEmitter.gameObject.SetActive(true);
-            planet.reverseGravityWellParticleEmitter.transform.localScale = Vector3.one * planet.radiusGravity / 10;
-        }
-        else
-        {
-            attractorsPlaced++;
-            planet.gravityWellParticleEmitter.gameObject.SetActive(true);
-            planet.gravityWellParticleEmitter.transform.localScale = Vector3.one * planet.radiusGravity / 10;
-            planet.reverseGravityWellParticleEmitter.gameObject.SetActive(false);
+            return Vector3.Cross(dir, point - startPos).sqrMagnitude < radius * radius;
         }
 
-        allPlanets.Add(planet);
+        parPlanets.Clear();
+        foreach (var p in allPlanets)
+        {
+            if (Touches(p.transform.position, p.radiusGravity))
+            {
+                parPlanets.Add(p);
+            }
+        }
+    }
+
+    Planet GenerateStartPlanet()
+    {
+        var radius = goalSize / 2f;
+        return GenerateRandomPlanetAt("start", 0, 0, radius, goalMass, CalculateGravityRadius(goalMass, radius));
+    }
+
+
+    Planet GenerateGoalPlanet()
+    {
+        var goalPosition = Helper.GridPosition(Random.insideUnitCircle * GridCellSize * goalDistance, GridCellSize);
+        var radius = goalSize / 2f;
+        return GenerateRandomPlanetAt("goal", goalPosition.x, goalPosition.y, radius, goalMass, CalculateGravityRadius(goalMass, radius));
     }
 
     public void PlaceBall()
@@ -127,42 +150,32 @@ public class World : MonoBehaviour
         }
     }
 
-    void GeneratePlanets()
+    void GeneratePlanetsInFrustum()
     {
         Vector3 cameraPos = playerCamera.transform.position;
         var groundPosition = new Vector3(cameraPos.x, 0, cameraPos.z);
         var frustumDimension = Helper.ToVector3(Helper.FrustumDimensions(playerCamera, 500));
 
         Vector3 frustumStartCornerInWorld = groundPosition - frustumDimension / 2;
-        Vector3 frustumEdnCornerInWorld = frustumStartCornerInWorld + frustumDimension;
+        Vector3 frustumEndCornerInWorld = frustumStartCornerInWorld + frustumDimension;
+        
+        GeneratePlanets(frustumStartCornerInWorld, frustumEndCornerInWorld);
+    }
 
-        IterateGridPositionsInWorldRect(frustumStartCornerInWorld, frustumEdnCornerInWorld, (x, z) =>
+    void GeneratePlanets(Vector3 startCorner, Vector3 endCorner)
+    {
+        IterateGridPositionsInWorldRect(startCorner, endCorner, (x, z) =>
         {
             var radius = Random.Range(minPlanetSize / 2, maxPlanetSize / 2);
             var mass = Random.Range(minMass, maxMass);
-            var gravityRadius = Mathf.Max(1 / (cutOffGravitySpeed / mass / GravityObject.G), 2 * radius);
+            var gravityRadius = CalculateGravityRadius(mass, radius);
 
-            var clearanceRadius = gravityRadius + (GridCellSize / 2);
             var worldPos = Helper.WorldPosition(x, 0, z, GridCellSize);
-            var worldRectCornerOffset = new Vector3(clearanceRadius, 0, clearanceRadius);
+            var clearanceRadius = gravityRadius + PlanetClearance;
 
-            Vector3 worldRectStart = worldPos - worldRectCornerOffset;
-            Vector3 worldRectEnd = worldPos + worldRectCornerOffset;
-
-            if (CheckAllGridSlotsUnused(worldRectStart, worldRectEnd))
+            if (CheckAllGridSlotsUnused(worldPos, clearanceRadius))
             {
-                GenerateRandomPlanetAt(x, z, radius, mass, gravityRadius);
-
-                IterateGridPositionsInWorldRect(worldRectStart, worldRectEnd, (xx, zz) =>
-                {
-                    var inWorld = Helper.WorldPosition(xx, 0, zz, GridCellSize);
-                    if ((inWorld - worldPos).sqrMagnitude < clearanceRadius * clearanceRadius)
-                    {
-                        _usedGridSlots.Add(SlotId(xx, zz));
-                    }
-
-                    return true;
-                });
+                GenerateRandomPlanetAt("filler", x, z, radius, mass, gravityRadius);
             }
 
             return true;
@@ -193,10 +206,89 @@ public class World : MonoBehaviour
 
         return true;
     }
+    
+    bool IterateGridPositionsInWorldAround(Vector3 world, float radius, Func<int, int, bool> f)
+    {
+        var worldRectCornerOffset = new Vector3(radius, 0, radius);
+
+        Vector3 worldRectStart = world - worldRectCornerOffset;
+        Vector3 worldRectEnd = world + worldRectCornerOffset;
+
+        var radiusSquare = radius * radius;
+
+        return IterateGridPositionsInWorldRect(worldRectStart, worldRectEnd, (xx, zz) =>
+        {
+            var inWorld = Helper.WorldPosition(xx, 0, zz, GridCellSize);
+            if ((inWorld - world).sqrMagnitude < radiusSquare)
+            {
+                if (!f(xx, zz))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }
+
+    Planet GenerateRandomPlanetAt(string kind, int x, int z, float radius, float mass, float gravityRadius)
+    {
+        Planet planet = Instantiate(planetPrefab).GetComponent<Planet>();
+        
+        planet.radius = radius;
+        planet.mass = mass;
+        planet.radiusGravity = gravityRadius;
+        
+        var planetObject = planet.gameObject;
+        planetObject.transform.parent = planets.transform;
+        planetObject.name = $"Planet {kind} at ({x}, {z}) in grid";
+        Vector3 pos = Helper.WorldPosition(x, 0, z, GridCellSize);
+        planetObject.transform.position = pos + Helper.ToVector3(Random.insideUnitCircle * Random.Range(0,  GridCellSize));
+
+        var currentModel = Instantiate(planetPrefabs[UnityEngine.Random.Range(0, planetPrefabs.Count)], planet.transform);
+        currentModel.AddComponent<PlanetRotate>().rotationSpeed = UnityEngine.Random.Range(20, 50);
+        currentModel.transform.localScale = Vector3.one * planet.radius;
+
+        if (Random.value < repulsorProbability)
+        {
+            repulsorsPlaced++;
+            planet.mass *= -1;
+            planet.gravityWellParticleEmitter.gameObject.SetActive(false);
+            planet.reverseGravityWellParticleEmitter.gameObject.SetActive(true);
+            planet.reverseGravityWellParticleEmitter.transform.localScale = Vector3.one * planet.radiusGravity / 10;
+        }
+        else
+        {
+            attractorsPlaced++;
+            planet.gravityWellParticleEmitter.gameObject.SetActive(true);
+            planet.gravityWellParticleEmitter.transform.localScale = Vector3.one * planet.radiusGravity / 10;
+            planet.reverseGravityWellParticleEmitter.gameObject.SetActive(false);
+        }
+        
+        allPlanets.Add(planet);
+
+        IterateGridPositionsInWorldAround(pos, gravityRadius + PlanetClearance, (xx, zz) =>
+        {
+            _usedGridSlots.Add(SlotId(xx, zz));
+            return true;
+        });
+
+        return planet;
+    }
+
+    private float CalculateGravityRadius(float mass, float radius)
+    {
+        return Mathf.Max(1 / (cutOffGravitySpeed / mass / GravityObject.G), 2 * radius);
+    }
 
     bool CheckAllGridSlotsUnused(Vector3 a, Vector3 b)
     {
         return IterateGridPositionsInWorldRect(a, b, (i, i1) => !_usedGridSlots.Contains(SlotId(i, i1)));
+    }
+
+    bool CheckAllGridSlotsUnused(Vector3 a, float b)
+    {
+        return IterateGridPositionsInWorldAround(a, b, (i, i1) => !_usedGridSlots.Contains(SlotId(i, i1)));
     }
 
     static long SlotId(int x, int z)
