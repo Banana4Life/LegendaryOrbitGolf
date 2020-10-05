@@ -88,6 +88,10 @@ public class Ball : GravityObject
 
         if (_trajectory.CalculateNext(dtSince, out var pos, out var v))
         {
+            if (pos.sqrMagnitude == 0)
+            {
+                return;
+            }
             transform.position = pos;
             velocity = v;
         }
@@ -263,7 +267,7 @@ public class Ball : GravityObject
             {
                 Gizmos.color = colorStable;
             }
-            // Handles.DrawWireDisc(position, Vector3.up, 0.1f);
+            Handles.DrawWireDisc(position, Vector3.up, 0.1f);
             Gizmos.DrawLine(prevPosition, position);
             prevPosition = position;
         }

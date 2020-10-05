@@ -32,7 +32,7 @@ static class TrajectoryUtil
 
 public class Trajectory
 {
-    private const int Capacity = 10000;
+    private const int Capacity = 2000;
 
     public bool isAnalyzed;
     public bool isStable;
@@ -129,16 +129,37 @@ public class Trajectory
                     : previous.Item2 * diffFactor + next.Item2 * (1 - diffFactor);
             }
         }
+        else
+        {
+            if (previous == null)
+            {
+                throw new InvalidDataException("Trajectory had no previous data for " + dtSince);
+            }
+            position = previous.Item1;
+            velocity = previous.Item2;
+            Debug.Log("Trajectory is Empty");
+        }
 
         points.Prepend(previous);
         return true;
     }
 
-    public Planet FindPlanetAround(Planet current, World world, float ballRadius, Vector3 pos)
+    public Planet FindPlanetAround(Planet current, World world, float ballRadius, Vector3 pos, out Vector3 delta)
     {
+        delta = Vector3.zero;
+        if (current != null)
+        {
+            delta = pos - current.transform.position;
+            if (TrajectoryUtil.CheckCollided(delta, current.radiusGravity))
+            {
+                return current;
+            }
+        }
+        
         foreach (var planet in world.allPlanets)
         {
-            if (TrajectoryUtil.CheckCollided(pos - planet.transform.position, planet.radiusGravity + ballRadius))
+            delta = pos - planet.transform.position;
+            if (TrajectoryUtil.CheckCollided(delta, planet.radiusGravity))
             {
                 return planet;
             }
@@ -155,7 +176,7 @@ public class Trajectory
         }
         var lastBufferItem = points.Tail;
 
-        Planet planet = FindPlanetAround(null, ball.world, ball.radius, lastBufferItem.Item1);
+        Planet planet = FindPlanetAround(null, ball.world, ball.radius, lastBufferItem.Item1, out _);
 
         var initialLength = points.Length;
         for (int i = 0; i < points.Capacity - initialLength; i++)
@@ -163,36 +184,34 @@ public class Trajectory
             lastBufferItem = points.Tail;
             var acceleration = Vector3.zero;
             var lastBallPos = lastBufferItem.Item1;
-            Vector3 delta;
-            if (planet != null)
-            {
-                delta = lastBallPos - planet.transform.position;
-                if (!TrajectoryUtil.CheckCollided(delta, planet.radiusGravity + ball.radius))
-                {
-                    planet = FindPlanetAround(null, ball.world, ball.radius, lastBallPos);
-                }
-            }
-
+            planet = FindPlanetAround(planet, ball.world, ball.radius, lastBallPos, out var delta);
             var lastSpeed = lastBufferItem.Item2.magnitude;
             float dT;
             if (planet != null)
             {
-                Vector3 planetPos = planet.transform.position;
-                delta = lastBallPos - planetPos;
+                if (TrajectoryUtil.CheckCollided(delta, planet.radius + ball.radius))
+                {
+                    return this;
+                }
                 acceleration = -TrajectoryUtil.CalcGravityAcceleration(delta, ball.mass, planet);
-                var orbitAroundRadius = planet.radiusGravity;
-
+                
                 // ((a * t) +v) * t = d
                 // x = sqrt(4ad+v²) + v / 2a
                 // or when a = 0 => d / v
-
                 var accelerationMagnitude = acceleration.magnitude;
-                dT = (float) ((Math.Sqrt((4 * accelerationMagnitude * 0.05f) + Math.Pow(lastSpeed, 2)) - lastSpeed) /  (2 * accelerationMagnitude));
-                var magnitude = (lastBallPos - planetPos).magnitude;
+                dT = (float) ((Math.Sqrt((4 * accelerationMagnitude * 0.25f) + Math.Pow(lastSpeed, 2)) - lastSpeed) /  (2 * accelerationMagnitude));
 
-                dT *= Math.Min((float) Math.Pow(magnitude / orbitAroundRadius, 2), 1);
-                // dT *= Math.Max(Math.Min((float) Math.Pow(magnitude / orbitAroundRadius, 2), 1), 0.00001f);
+                // Vector3 planetPos = planet.transform.position;
+                // var orbitAroundRadius = planet.radiusGravity;
+                // var magnitude = (lastBallPos - planetPos).magnitude;
+                // dT *= Math.Min((float) Math.Pow(magnitude / orbitAroundRadius, 2), 1);
+                // var mul = (float) Math.Pow(magnitude / orbitAroundRadius, 2);
+                // dT *= Math.Max(Math.Min(mul, 1), 0.5f);
                 // dT *= Math.Min((float) magnitude / orbitAroundRadius * 5, 1);
+                if (acceleration.sqrMagnitude == 0)
+                {
+                    dT = 0.7f / lastSpeed;
+                }
             }
             else
             {
@@ -202,6 +221,11 @@ public class Trajectory
             var newVelocity = lastBufferItem.Item2 + acceleration * dT;
             var newPosition = lastBufferItem.Item1 + newVelocity * dT;
             var newDT = lastBufferItem.Item3 + dT;
+            
+            if ((lastBallPos - newPosition).sqrMagnitude > 1)
+            {
+                Debug.Log("WTF");
+            }
 
             points.Append(new Tuple<Vector3, Vector3, float>(newPosition, newVelocity, newDT));
         }
