@@ -287,7 +287,7 @@ MonoBehaviour:
   goalPlanet: {fileID: 0}
   attractorsPlaced: 0
   repulsorsPlaced: 0
-  goalDistance: 20
+  goalDistance: 80
   goalMass: 50000
   goalSize: 2
 --- !u!114 &217738353
