@@ -10,7 +10,7 @@ namespace Objects.Background
         void Update()
         {
             _cameraTransform = playerCamera.transform;
-            transform.localScale = Helper.ToVector3(Helper.FrustumDimensions(playerCamera, 1.0f));
+            transform.localScale = Helper.ToVector3(Helper.FrustumDimensions(playerCamera, playerCamera.farClipPlane));
         }
     }
 }

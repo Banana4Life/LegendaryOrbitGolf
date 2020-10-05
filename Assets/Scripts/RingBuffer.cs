@@ -21,8 +21,13 @@ public class RingBuffer<T>
                 throw new IndexOutOfRangeException();
             }
 
-            return _buffer[_head + index % Capacity];
+            return _buffer[ToRingIndex(_head + index)];
         }
+    }
+
+    private int ToRingIndex(int index)
+    {
+        return (index + Capacity) % Capacity;
     }
 
     public RingBuffer(int capacity)
@@ -35,7 +40,7 @@ public class RingBuffer<T>
 
     public void Append(T item)
     {
-        var index = (_tail + 1) % Capacity;
+        var index = ToRingIndex(_tail + 1);
         if (index == _head)
         {
             throw new IndexOutOfRangeException("Tail overtook Head!");
@@ -52,7 +57,7 @@ public class RingBuffer<T>
 
     public void Prepend(T item)
     {
-        var index = _head == -1 ? 0 : (_head - 1 + Capacity) % Capacity;
+        var index = _head == -1 ? 0 : ToRingIndex(_head - 1);
         if (index == _tail)
         {
             throw new IndexOutOfRangeException("Head overtook Tail!");
@@ -76,7 +81,7 @@ public class RingBuffer<T>
 
         T item = Head;
         _buffer[_head] = default;
-        _head = (_head + 1) % Capacity;
+        _head = ToRingIndex(_head + 1);
         _length--;
         if (_length == 0)
         {
@@ -96,7 +101,7 @@ public class RingBuffer<T>
 
         T item = Tail;
         _buffer[_tail] = default;
-        _tail = (_tail - 1 + Capacity) % Capacity;
+        _tail = ToRingIndex(_tail - 1);
         _length--;
         if (_length == 0)
         {

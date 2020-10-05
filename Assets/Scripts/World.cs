@@ -35,14 +35,18 @@ public class World : MonoBehaviour
     public float minMass = 20000f;
     public float maxMass = 50000f;
     public float cutOffGravitySpeed = 250;
-
+    public float repulsorProbability = 0.05f;
+    
     public List<GameObject> planetPrefabs = new List<GameObject>();
 
     public List<Planet> allPlanets = new List<Planet>();
 
     private const float GridCellSize = 5f;
-    private readonly HashSet<long> usedGridSlots = new HashSet<long>();
-
+    private readonly HashSet<long> _usedGridSlots = new HashSet<long>();
+        
+    public int attractorsPlaced;
+    public int repulsorsPlaced;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -57,8 +61,12 @@ public class World : MonoBehaviour
         }
 
         allPlanets.Clear();
-        usedGridSlots.Clear();
+        _usedGridSlots.Clear();
+        
+        GetComponent<MouseController>().ball = ballObject.GetComponent<Ball>();
 
+        attractorsPlaced = 0;
+        repulsorsPlaced = 0;
         GeneratePlanets();
     }
 
@@ -80,8 +88,9 @@ public class World : MonoBehaviour
         currentModel.AddComponent<PlanetRotate>().rotationSpeed = UnityEngine.Random.Range(20, 50);
         currentModel.transform.localScale = Vector3.one * planet.radius;
 
-        if (UnityEngine.Random.Range(0, 5) == 4)
+        if (Random.value < repulsorProbability)
         {
+            repulsorsPlaced++;
             planet.mass *= -1;
             planet.gravityWellParticleEmitter.gameObject.SetActive(false);
             planet.reverseGravityWellParticleEmitter.gameObject.SetActive(true);
@@ -89,6 +98,7 @@ public class World : MonoBehaviour
         }
         else
         {
+            attractorsPlaced++;
             planet.gravityWellParticleEmitter.gameObject.SetActive(true);
             planet.gravityWellParticleEmitter.transform.localScale = Vector3.one * planet.radiusGravity / 10;
             planet.reverseGravityWellParticleEmitter.gameObject.SetActive(false);
@@ -123,7 +133,7 @@ public class World : MonoBehaviour
     {
         Vector3 cameraPos = playerCamera.transform.position;
         var groundPosition = new Vector3(cameraPos.x, 0, cameraPos.z);
-        var frustumDimension = Helper.ToVector3(Helper.FrustumDimensions(playerCamera, groundPosition));
+        var frustumDimension = Helper.ToVector3(Helper.FrustumDimensions(playerCamera, 500));
 
         Vector3 frustumStartCornerInWorld = groundPosition - frustumDimension / 2;
         Vector3 frustumEdnCornerInWorld = frustumStartCornerInWorld + frustumDimension;
@@ -150,7 +160,7 @@ public class World : MonoBehaviour
                     var inWorld = Helper.WorldPosition(xx, 0, zz, GridCellSize);
                     if ((inWorld - worldPos).sqrMagnitude < clearanceRadius * clearanceRadius)
                     {
-                        usedGridSlots.Add(SlotId(xx, zz));
+                        _usedGridSlots.Add(SlotId(xx, zz));
                     }
 
                     return true;
@@ -188,7 +198,7 @@ public class World : MonoBehaviour
 
     bool CheckAllGridSlotsUnused(Vector3 a, Vector3 b)
     {
-        return IterateGridPositionsInWorldRect(a, b, (i, i1) => !usedGridSlots.Contains(SlotId(i, i1)));
+        return IterateGridPositionsInWorldRect(a, b, (i, i1) => !_usedGridSlots.Contains(SlotId(i, i1)));
     }
 
     static long SlotId(int x, int z)

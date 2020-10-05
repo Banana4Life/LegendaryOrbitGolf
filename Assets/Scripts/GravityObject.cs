@@ -15,36 +15,6 @@ public class GravityObject : MonoBehaviour
     
     public Planet inOrbitAround;
 
-    protected World world;
-
-    private void Start()
-    {
-        world = GetComponentInParent<World>();
-    }
-
-    public static bool CheckCollided(Vector3 delta, float radii)
-    {
-        var distanceSquared = delta.sqrMagnitude;
-        var distanceBorder = Math.Pow(radii, 2);
-        return distanceBorder > distanceSquared;
-    }
-
-    public static Vector3 CalcGravityAcceleration(Vector3 delta, float mass, GravityObject other)
-    {
-        var distanceSquared = delta.sqrMagnitude;
-        if (!(distanceSquared < Mathf.Pow(other.radiusGravity, 2)))
-        {
-            return Vector3.zero;
-        }
-
-        var forceMagnitude = (G * mass * other.mass) / distanceSquared;
-        var distance = Mathf.Sqrt(distanceSquared);
-        var dax = forceMagnitude * delta.x / distance / mass;
-        var daz = forceMagnitude * delta.z / distance / mass;
-            
-        return new Vector3(dax, 0, daz);
-    }
-    
     void OnDrawGizmosSelected()
     {
         var pos = transform.position;
@@ -62,12 +32,6 @@ public class GravityObject : MonoBehaviour
         
         if (this is Ball)
         {
-            foreach (var planet in world.allPlanets)
-            {
-                Handles.color = Color.red;
-                Handles.DrawWireDisc(planet.transform.position, Vector3.up, planet.radiusGravity);
-            }
-            
             Gizmos.color = Color.gray;
             if (inOrbitAround)
             {

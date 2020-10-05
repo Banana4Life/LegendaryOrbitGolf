@@ -29,10 +29,24 @@ public class Ball : GravityObject
 
     public bool inStableOrbit;
 
-    private const int Capacity = 2000;    
-    public RingBuffer<Tuple<Vector3, Vector3, float>> trajectory;
 
+    private Trajectory _trajectory = new Trajectory();
+    private Trajectory _planTrajectory = new Trajectory();
+    
     private float dtSince;
+
+    private float orbitPointSize = 1;
+
+    public World world;
+
+    public float minBumpSpeed = 0.5f;
+    public float maxBumpSpeed = 15; 
+
+    private void Start()
+    {
+        world = GetComponentInParent<World>();
+    }
+    
     public void PlaceInOrbit(World world)
     {
         this.world = world;
@@ -62,104 +76,84 @@ public class Ball : GravityObject
 
         savePosition = transform.position;
         saveVelocity = velocity;
+        
+        RecalculateTrajectory();
     }
-
-    private Vector2 oldPos = Vector2.zero;
-    private Vector2 orbitPoint = Vector2.zero;
-    public int revolutions = 0;
 
     public void OnCollided()
     {
         frozen = true;
         dead = true;
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
-        if (frozen)
+        if (!frozen)
         {
-            return;
+            FollowTrajectory();
+            _trajectory.Continue(Vector3.zero, this);
         }
-
-        dtSince += Time.deltaTime;
-        if (trajectory == null)
-        {
-            return;
-        }
-
-        Tuple<Vector3, Vector3, float> previous = null;
-        while (trajectory.Length > 0 && trajectory.Head.Item3 < dtSince)
-        {
-            previous = trajectory.PopHead();
-        }
-
-        if (trajectory.Length != 0)
-        {
-            if (previous == null)
-            {
-                throw new InvalidDataException("Trajectory had no previous data for " + dtSince);
-            }
-            var next = trajectory.Head;
-            if (previous.Item3 < dtSince && next.Item3 > dtSince)
-            {
-                var trajectoryDiff = next.Item3 - previous.Item3;
-                var realDiff = dtSince - previous.Item3;
-                var diffFactor = realDiff / trajectoryDiff;
-
-                transform.position = previous.Item1 + (next.Item1 - previous.Item1) * diffFactor;
-                velocity = previous.Item2 * diffFactor + next.Item2 * (1 - diffFactor);
-            }    
-        }
-        trajectory.Prepend(previous);
-        ContinueTrajectory(Vector3.zero);        
-        // var acceleration = Vector3.zero;
-        // if (gravityAffected)
-        // {
-        //     
-        //     foreach (var planet in world.allPlanets)
-        //     {
-        //         var delta = transform.position - planet.transform.position;
-        //         if (CheckCollided(delta, radius + planet.radius))
-        //         {
-        //             if (this is Ball ball)
-        //             {
-        //                 ball.OnCollided();
-        //             }
-        //
-        //             return;
-        //         }
-        //
-        //         if (CheckCollided(delta, radiusGravity + planet.radiusGravity))
-        //         {
-        //             inOrbitAround = planet;
-        //         }
-        //
-        //         acceleration -= CalcGravityAcceleration(delta, mass, planet);
-        //     }
-        //
-        //     if (inOrbitAround)
-        //     {
-        //         var delta = transform.position - inOrbitAround.transform.position;
-        //         if (!CheckCollided(delta, radiusGravity + inOrbitAround.radiusGravity))
-        //         {
-        //             inOrbitAround = null;
-        //         }
-        //     }
-        // }
-        //
-        // if (moving)
-        // {
-        //     // ApplyGravity();
-        //     var dt = (float) Math.Round(Time.deltaTime, 3);
-        //     velocity += acceleration * dt;
-        //     transform.Translate(velocity * dt);
-        // }
-
-        OnUpdate();
+        CheckStillInOrbit();
+        UpdateParticleSystems();
     }
 
-    private void OnUpdate()
+    private void FollowTrajectory()
+    {
+        dtSince += Time.deltaTime;
+
+        if (_trajectory.CalculateNext(dtSince, out var pos, out var v))
+        {
+            transform.position = pos;
+            velocity = v;
+        }
+
+        if (!_trajectory.isAnalyzed)
+        {
+            AnalyzeTrajectory();
+        }
+    }
+
+    public void AnalyzeTrajectory()
+    {
+        foreach (var planet in world.allPlanets)
+        {
+            var delta = transform.position - planet.transform.position;
+            // if (CheckCollided(delta, radius + planet.radius))
+            // {
+            //     OnCollided(); // TODO cannot call it here anymore
+            //     return;
+            // }
+                
+            if (TrajectoryUtil.CheckCollided(delta, radiusGravity + planet.radiusGravity))
+            {
+                inOrbitAround = planet;
+                break;
+            }
+        }
+
+        if (!_trajectory.isAnalyzed)
+        {
+            if (_trajectory.Analyze(inOrbitAround, orbitPointSize))
+            {
+                savePosition = transform.position;
+                saveVelocity = velocity;
+            }    
+        }
+    }
+
+    private void CheckStillInOrbit()
+    {
+        if (inOrbitAround)
+        {
+            var delta = transform.position - inOrbitAround.transform.position;
+            if (!TrajectoryUtil.CheckCollided(delta, radiusGravity + inOrbitAround.radiusGravity))
+            {
+                inOrbitAround = null;
+            }
+        }
+    }
+
+    private void UpdateParticleSystems()
     {
         if (velocity != Vector3.zero)
         {
@@ -168,39 +162,6 @@ public class Ball : GravityObject
 
         var emissionModule = movingParticleSystem.emission;
         emissionModule.enabled = !frozen && velocity.sqrMagnitude > 0.5;
-
-        var nearbyPlanets = world.allPlanets.FindAll(p => (p.transform.position - transform.position).sqrMagnitude < Math.Pow(p.radiusGravity, 2));
-        var newPos = new Vector2(transform.position.x, transform.position.z);
-        foreach (var nearbyPlanet in nearbyPlanets)
-        {
-            var planetPos = nearbyPlanet.transform.position;
-
-            if (LinesUtil.LineSegmentsIntersection(oldPos, newPos, new Vector2(planetPos.x, planetPos.z), new Vector2(planetPos.x, planetPos.z + nearbyPlanet.radiusGravity), out Vector2 intersection))
-            {
-                if ((orbitPoint - intersection).sqrMagnitude < 0.1)
-                {
-                    revolutions++;
-                    if (revolutions > 2)
-                    {
-                        if (!inStableOrbit)
-                        {
-                            savePosition = transform.position;
-                            saveVelocity = velocity;
-                        }
-
-                        inStableOrbit = true;
-                    }
-                }
-                else
-                {
-                    inStableOrbit = false;
-                    orbitPoint = intersection;
-                    revolutions = 0;
-                }
-            }
-        }
-
-        oldPos = newPos;
     }
 
     public void Freeze()
@@ -213,108 +174,67 @@ public class Ball : GravityObject
         frozen = false;
     }
 
-    public void Bump(Vector3 dv)
+    public void SubmitPlan()
     {
-        orbitPoint = oldPos;
-        inStableOrbit = false;
-        frozen = false;
-        velocity += dv;
+        var newTrajectory = _planTrajectory;
+        _planTrajectory = _trajectory.Reset();
+        _trajectory = newTrajectory;
+        dtSince = 0;
+        UnFreeze();
     }
 
     public void CheatJumpTo(Vector3 pos)
     {
+        ScrapPlan();
         transform.position = pos;
         velocity = Vector3.zero;
         frozen = true;
         savePosition = pos;
         saveVelocity = velocity;
+        RecalculateTrajectory();
     }
 
     public void EngangeBreaks()
     {
         velocity *= 0.8f;
         breakParticleSystem.Play();
-        ResetTrajectory();
-        ContinueTrajectory(Vector3.zero);
+        RecalculateTrajectory();
         // TODO sounds
     }
 
-    public void PrepareBump()
+    public void StartPlanning()
     {
-        Freeze();
-        if (dead)
-        {
-            dead = false;
-            transform.position = savePosition;
-            velocity = saveVelocity;
-        }
-        else if (inStableOrbit)
+        // If currently stable save position for later retry
+        if (inStableOrbit)
         {
             savePosition = transform.position;
             saveVelocity = velocity;
         }
+        // If dead revive at last savePoint
+        if (dead)
+        {
+            Revive();
+        }
+        // Freeze while planning
+        Freeze();
     }
     
-    public RingBuffer<Tuple<Vector3, Vector3, float>> GenerateTrajectory(float maxBumpSpeed, Vector3 hoverPosition, float holdingTime)
+    public void PlanTrajectory(Vector3 hoverPosition, float holdingTime)
     {
         Vector3 ballPos = transform.position;
-        var bumpSpeed = BumpSpeed(ballPos, velocity, maxBumpSpeed, hoverPosition, holdingTime);
-        ResetTrajectory();
-        ContinueTrajectory(bumpSpeed);
-        return trajectory;
+        var bumpSpeed = CalcBumpSpeed(ballPos, velocity, minBumpSpeed, maxBumpSpeed, hoverPosition, holdingTime);
+        _planTrajectory.Reset().Continue(bumpSpeed, this).Analyze(inOrbitAround, orbitPointSize);
     }
 
-    private void ResetTrajectory()
+    private void RecalculateTrajectory()
     {
-        trajectory = new RingBuffer<Tuple<Vector3, Vector3, float>>(Capacity);
+        _trajectory.Reset().Continue(Vector3.zero, this);
         dtSince = 0;
+        AnalyzeTrajectory();
     }
 
-    public void ContinueTrajectory(Vector3 bumpSpeed)
+    public static Vector3 CalcBumpSpeed(Vector3 ballPos, Vector3 ballVelocity, float minSpeed, float maxSpeed, Vector3 hover, float holdingTime)
     {
-        if (trajectory.Length == 0)
-        {
-            trajectory.Append(new Tuple<Vector3, Vector3, float>(transform.position, velocity - bumpSpeed, 0f));    
-        }
-
-        for (int i = 0; i < trajectory.Capacity - trajectory.Length; i++)
-        {
-            var lastBufferItem = trajectory.Tail;
-            if (!GetAcceleration(world, lastBufferItem.Item1, radius, mass, out var acceleration))
-            {
-                return;
-            }
-
-            var dT = 0.25f / lastBufferItem.Item2.magnitude;
-            var newSpeed = lastBufferItem.Item2 + acceleration * dT;
-            var newPosition = lastBufferItem.Item1 + newSpeed * dT;
-            var newDT = lastBufferItem.Item3 + dT;
-
-            trajectory.Append(new Tuple<Vector3, Vector3, float>(newPosition, newSpeed, newDT));
-        }
-    }
-
-    private static bool GetAcceleration(World world, Vector3 ballPos, float ballRadius, float ballMass, out Vector3 acceleration)
-    {
-        acceleration = Vector3.zero;
-        foreach (var planet in world.allPlanets)
-        {
-            var delta = ballPos - planet.transform.position;
-            if (CheckCollided(delta, planet.radius + ballRadius))
-            {
-                return false;
-            }
-
-            acceleration -= CalcGravityAcceleration(delta, ballMass, planet);
-        }
-
-        return true;
-    }
-
-    public static Vector3 BumpSpeed(Vector3 ballPos, Vector3 ballVelocity, float maxSpeed, Vector3 hover, float holdingTime)
-    {
-        var minSpeed = 1.2f;
-
         var playerControlledDirection = -(hover - ballPos).normalized;
         var ballControlledDirection = -ballVelocity.normalized;
 
@@ -333,5 +253,64 @@ public class Ball : GravityObject
         }
 
         return ballControlledDirection * Math.Min(triangleMagnitude, maxSpeed);
+    }
+    
+    
+    private void OnDrawGizmos()
+    {
+        DrawTrajectoryGizmos(_trajectory, Color.gray, Color.blue);
+        DrawTrajectoryGizmos(_planTrajectory, Color.white, Color.green);
+    }
+
+    private void DrawTrajectoryGizmos(Trajectory trajectory, Color color, Color colorStable)
+    {
+        if (trajectory == null)
+        {
+            return;
+        }
+
+        foreach (var position in trajectory.Positions(10))
+        {
+            Handles.color = color;
+            if (trajectory.isStable)
+            {
+                Handles.color = colorStable;
+            }
+            Handles.DrawWireDisc(position, Vector3.up, radius);
+        }
+
+        if (!trajectory.isEmpty() && trajectory.IsInterupted())
+        {
+            Handles.color = Color.red;
+            Handles.DrawWireDisc(trajectory.points.Tail.Item1, Vector3.up, radius);
+        }
+        
+        if (trajectory.isAnalyzed)
+        {
+            Handles.color = Color.magenta;
+            Handles.DrawWireDisc(new Vector3(trajectory.orbitPoint.x, 0, trajectory.orbitPoint.y),  Vector3.up, orbitPointSize);    
+        }
+        
+            
+    }
+
+    public bool HasPlan()
+    {
+        return !_planTrajectory.isEmpty();
+    }
+
+    public void ScrapPlan()
+    {
+        _planTrajectory.Reset();
+        UnFreeze();
+    }
+
+    public void Revive()
+    {
+        dead = false;
+        transform.position = savePosition;
+        velocity = saveVelocity;
+        RecalculateTrajectory();
+        UnFreeze();
     }
 }

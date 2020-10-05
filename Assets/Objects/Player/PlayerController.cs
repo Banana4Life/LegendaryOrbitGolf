@@ -2,6 +2,7 @@
 
 namespace Objects.Player
 {
+    [RequireComponent(typeof(SmoothCamera))]
     public class PlayerController : MonoBehaviour
     {
         public bool enableEdgeScrolling = true;
@@ -15,15 +16,13 @@ namespace Objects.Player
 
         public Camera playerCamera;
         private Transform _cameraTransform;
-
-        public GameObject background;
+        private SmoothCamera _smoothCamera;
     
         // Start is called before the first frame update
         void Start()
         {
-        
             _cameraTransform = playerCamera.transform;
-            var pos = _cameraTransform.position;
+            _smoothCamera = GetComponent<SmoothCamera>();
         
             _cameraTransform.rotation = Quaternion.AngleAxis(90, Vector3.right);
             _cameraTransform.position = new Vector3(0, Mathf.Lerp(minZoom, maxZoom, startZoom), 0);
@@ -40,21 +39,26 @@ namespace Objects.Player
             float z = 0;
             if (mousePos.x >= 0 && mousePos.x < borderSize)
             {
-                x = -1;
+                x += -1;
             }
             if (mousePos.x < Screen.width && mousePos.x >= Screen.width - borderSize)
             {
-                x = 1;
+                x += 1;
             }
 
             if (mousePos.y >= 0 && mousePos.y < borderSize)
             {
-                z = -1;
+                z += -1;
             }
 
             if (mousePos.y < Screen.height && mousePos.y >= Screen.height - borderSize)
             {
-                z = 1;
+                z += 1;
+            }
+
+            if (x == 0 && z == 0)
+            {
+                return Vector2.zero;
             }
             
             return new Vector2(x, z);
@@ -67,47 +71,54 @@ namespace Objects.Player
         
             if (Input.GetKey(KeyCode.A))
             {
-                x = -1;
+                x += -1;
             }
             if (Input.GetKey(KeyCode.D))
             {
-                x = 1;
+                x += 1;
             }
 
             if (Input.GetKey(KeyCode.S))
             {
-                z = -1;
+                z += -1;
             }
 
             if (Input.GetKey(KeyCode.W))
             {
-                z = 1;
+                z += 1;
+            }
+
+            if (x == 0 && z == 0)
+            {
+                return Vector2.zero;
             }
             
             return new Vector2(x, z);
         }
-
-        private Vector2 Clamp(Vector2 x)
-        {
-            return new Vector2(Mathf.Clamp(x.x, -1, 1), Mathf.Clamp(x.y, -1, 1));
-        }
-
-        // Update is called once per frame
+        
         void Update()
         {
-
-            var scroll = Clamp(DetectEdgeScroll() + DetectKeyboardScroll()).normalized;
-
             var t = transform;
-            t.Translate(new Vector3(scroll.x, 0, scroll.y) * (speed * Time.deltaTime));
+            var scroll = Helper.Clamp(DetectEdgeScroll() + DetectKeyboardScroll()).normalized;
+            
 
-            var currentCameraHeight = _cameraTransform.localPosition.y;
-            var newCameraHeight = Mathf.Clamp( currentCameraHeight - (Input.mouseScrollDelta.y * zoomSpeed), minZoom, maxZoom);
-            _cameraTransform.localPosition = new Vector3(0, newCameraHeight, 0);
+            if (scroll != Vector2.zero)
+            {
+                _smoothCamera.SetRelativeTarget(scroll * (speed * Time.deltaTime));
+            }
+
+            var scrollValue = Input.mouseScrollDelta.y;
+            if (Mathf.Abs(scrollValue) > float.Epsilon)
+            {
+                var currentCameraHeight = _cameraTransform.localPosition.y;
+                var newCameraHeight = Mathf.Clamp(currentCameraHeight - (scrollValue * zoomSpeed), minZoom, maxZoom);
+                _cameraTransform.localPosition = new Vector3(0, newCameraHeight, 0);
+                _smoothCamera.SetZoom(newCameraHeight);
+            }
 
             if (Input.GetButton("Jump"))
             {
-                t.position = t.parent.GetComponentInChildren<Ball>().transform.position;
+                _smoothCamera.SetTarget(t.parent.GetComponentInChildren<Ball>().transform.position);
             }
         }
     }
