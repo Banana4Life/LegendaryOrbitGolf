@@ -285,8 +285,8 @@ public class Ball : GravityObject
 
     private void OnDrawGizmos()
     {
-        DrawTrajectoryGizmos(_trajectory, Color.gray, Color.blue);
-        DrawTrajectoryGizmos(_planTrajectory, Color.white, Color.green);
+        // DrawTrajectoryGizmos(_trajectory, Color.gray, Color.blue);
+        // DrawTrajectoryGizmos(_planTrajectory, Color.white, Color.green);
     }
 
     private void DrawTrajectoryGizmos(Trajectory trajectory, Color color, Color colorStable)
