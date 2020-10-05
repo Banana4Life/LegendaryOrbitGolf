@@ -154,7 +154,7 @@ public class World : MonoBehaviour
     {
         Vector3 cameraPos = playerCamera.transform.position;
         var groundPosition = new Vector3(cameraPos.x, 0, cameraPos.z);
-        var frustumDimension = Helper.ToVector3(Helper.FrustumDimensions(playerCamera, 500));
+        var frustumDimension = Helper.ToVector3(Helper.FrustumDimensions(playerCamera, 200));
 
         Vector3 frustumStartCornerInWorld = groundPosition - frustumDimension / 2;
         Vector3 frustumEndCornerInWorld = frustumStartCornerInWorld + frustumDimension;

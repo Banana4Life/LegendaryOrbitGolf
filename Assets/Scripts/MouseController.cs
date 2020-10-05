@@ -46,6 +46,7 @@ public class MouseController : MonoBehaviour
             mousePosition.z = mainCamera.transform.position.y;
             hover = mainCamera.ScreenToWorldPoint(mousePosition);
             holding = false;
+            ball.PlanTrajectory(hover, holdingTime);
         }
         else if (holding)
         {

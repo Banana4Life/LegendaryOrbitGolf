@@ -35,7 +35,7 @@ public class Ball : GravityObject
     
     private float dtSince;
 
-    private float orbitPointSize = 1;
+    private float orbitPointSize = 0.25f;
 
     public World world;
 
@@ -140,7 +140,7 @@ public class Ball : GravityObject
         if (inOrbitAround)
         {
             var delta = transform.position - inOrbitAround.transform.position;
-            if (!TrajectoryUtil.CheckCollided(delta, radiusGravity + inOrbitAround.radiusGravity))
+            if (!TrajectoryUtil.CheckCollided(delta, radiusGravity + inOrbitAround.radiusGravity + radius))
             {
                 inOrbitAround = null;
             }
@@ -258,19 +258,22 @@ public class Ball : GravityObject
 
     private void DrawTrajectoryGizmos(Trajectory trajectory, Color color, Color colorStable)
     {
-        if (trajectory == null)
+        if (trajectory == null || trajectory.isEmpty())
         {
             return;
         }
 
-        foreach (var position in trajectory.Positions(10))
+        var prevPosition = trajectory.points.Head.Item1;
+        foreach (var position in trajectory.Positions(1))
         {
-            Handles.color = color;
+            Gizmos.color = color;
             if (trajectory.isStable)
             {
-                Handles.color = colorStable;
+                Gizmos.color = colorStable;
             }
-            Handles.DrawWireDisc(position, Vector3.up, radius);
+            // Handles.DrawWireDisc(position, Vector3.up, 0.1f);
+            Gizmos.DrawLine(prevPosition, position);
+            prevPosition = position;
         }
 
         if (!trajectory.isEmpty() && trajectory.IsInterupted())
