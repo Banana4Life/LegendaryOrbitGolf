@@ -20,7 +20,12 @@ namespace Objects.Player
         {
             if (!_spaceVehicle)
             {
-                _spaceVehicle = GameObject.Find("Ball").GetComponent<Ball>();
+                GameObject ballObject = GameObject.Find("Ball");
+                if (!ballObject)
+                {
+                    return;
+                }
+                _spaceVehicle = ballObject.GetComponent<Ball>();
             }
 
             

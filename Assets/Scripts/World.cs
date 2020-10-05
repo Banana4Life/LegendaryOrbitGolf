@@ -63,8 +63,6 @@ public class World : MonoBehaviour
         allPlanets.Clear();
         _usedGridSlots.Clear();
         
-        GetComponent<MouseController>().ball = ballObject.GetComponent<Ball>();
-
         attractorsPlaced = 0;
         repulsorsPlaced = 0;
         GeneratePlanets();
@@ -84,8 +82,8 @@ public class World : MonoBehaviour
         Vector3 pos = Helper.WorldPosition(x, 0, z, GridCellSize);
         planetObject.transform.position = pos + Helper.ToVector3(Random.insideUnitCircle * Random.Range(0, GridCellSize));
 
-        var currentModel = Instantiate(planetPrefabs[UnityEngine.Random.Range(0, planetPrefabs.Count)], planet.transform);
-        currentModel.AddComponent<PlanetRotate>().rotationSpeed = UnityEngine.Random.Range(20, 50);
+        var currentModel = Instantiate(planetPrefabs[Random.Range(0, planetPrefabs.Count)], planet.transform);
+        currentModel.AddComponent<PlanetRotate>().rotationSpeed = Random.Range(20, 50);
         currentModel.transform.localScale = Vector3.one * planet.radius;
 
         if (Random.value < repulsorProbability)
@@ -140,8 +138,8 @@ public class World : MonoBehaviour
 
         IterateGridPositionsInWorldRect(frustumStartCornerInWorld, frustumEdnCornerInWorld, (x, z) =>
         {
-            var radius = UnityEngine.Random.Range(minPlanetSize / 2, maxPlanetSize / 2);
-            var mass = UnityEngine.Random.Range(minMass, maxMass);
+            var radius = Random.Range(minPlanetSize / 2, maxPlanetSize / 2);
+            var mass = Random.Range(minMass, maxMass);
             var gravityRadius = Mathf.Max(1 / (cutOffGravitySpeed / mass / GravityObject.G), 2 * radius);
 
             var clearanceRadius = gravityRadius + (GridCellSize / 2);
