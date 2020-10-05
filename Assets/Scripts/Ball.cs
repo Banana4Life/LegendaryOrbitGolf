@@ -53,13 +53,7 @@ public class Ball : GravityObject
     }
     public void PlaceInOrbit()
     {
-        var planets = world.allPlanets.FindAll(p => p.mass > 0);
-        if (planets.Count == 0)
-        {
-            return;
-        }
-
-        var planet = planets[Random.Range(0, planets.Count)];
+        var planet = world.startPlanet;
         var gravityObject = planet.GetComponent<GravityObject>();
         transform.position = planet.transform.position;
         var distance = Random.Range(gravityObject.radius + radius * 2, gravityObject.radiusGravity - radius);

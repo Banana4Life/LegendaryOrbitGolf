@@ -48,20 +48,37 @@ public static class Helper
         float fov = c.fieldOfView * Mathf.Deg2Rad;
         float height = Mathf.Tan(fov / 2f) * distance * 2f;
         float width = height * c.aspect;
+        
         return new Vector2(width,height);
     }
 
     public static float DistanceToFillFrustum(Camera c, Vector2 dimensions)
     {
+        float fov = c.fieldOfView * Mathf.Deg2Rad;
         float width = dimensions.x;
         float height = Mathf.Max(dimensions.y, width / c.aspect);
-        
-        float fov = c.fieldOfView * Mathf.Deg2Rad;
-        float near = c.nearClipPlane;
-        float far = c.farClipPlane;
 
-        var distance = height / (Mathf.Tan(fov / 2f) * 2);
-        return distance;
+        return height / (Mathf.Tan(fov / 2f) * 2);
+    }
+
+    public static Vector2 Min(Vector2 a, Vector2 b)
+    {
+        return new Vector2(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y));
+    }
+
+    public static Vector2 Max(Vector2 a, Vector2 b)
+    {
+        return new Vector2(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+    }
+
+    public static Vector3 Min(Vector3 a, Vector3 b)
+    {
+        return new Vector3(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Min(a.z, b.z));
+    }
+
+    public static Vector3 Max(Vector3 a, Vector3 b)
+    {
+        return new Vector3(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y), Mathf.Max(a.z, b.z));
     }
 
     public static Vector2 Clamp(Vector2 x)
