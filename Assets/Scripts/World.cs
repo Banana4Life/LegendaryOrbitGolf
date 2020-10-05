@@ -122,7 +122,7 @@ public class World : MonoBehaviour
     Planet GenerateStartPlanet()
     {
         var radius = goalSize / 2f;
-        return GenerateRandomPlanetAt("start", 0, 0, radius, goalMass, CalculateGravityRadius(goalMass, radius));
+        return GenerateRandomPlanetAt("start", 0, 0, radius, goalMass, CalculateGravityRadius(goalMass, radius), false);
     }
 
 
@@ -130,7 +130,7 @@ public class World : MonoBehaviour
     {
         var goalPosition = Helper.GridPosition(Random.insideUnitCircle * GridCellSize * goalDistance, GridCellSize);
         var radius = goalSize / 2f;
-        return GenerateRandomPlanetAt("goal", goalPosition.x, goalPosition.y, radius, goalMass, CalculateGravityRadius(goalMass, radius));
+        return GenerateRandomPlanetAt("goal", goalPosition.x, goalPosition.y, radius, goalMass, CalculateGravityRadius(goalMass, radius), false);
     }
 
     public void LoadPlanetPrefabs()
@@ -168,7 +168,7 @@ public class World : MonoBehaviour
 
             if (CheckAllGridSlotsUnused(worldPos, clearanceRadius))
             {
-                GenerateRandomPlanetAt("filler", x, z, radius, mass, gravityRadius);
+                GenerateRandomPlanetAt("filler", x, z, radius, mass, gravityRadius, true);
             }
 
             return true;
@@ -224,7 +224,7 @@ public class World : MonoBehaviour
         });
     }
 
-    Planet GenerateRandomPlanetAt(string kind, int x, int z, float radius, float mass, float gravityRadius)
+    Planet GenerateRandomPlanetAt(string kind, int x, int z, float radius, float mass, float gravityRadius, bool allowRepulsor)
     {
         Planet planet = Instantiate(planetPrefab).GetComponent<Planet>();
         
@@ -242,7 +242,7 @@ public class World : MonoBehaviour
         currentModel.AddComponent<PlanetRotate>().rotationSpeed = UnityEngine.Random.Range(20, 50);
         currentModel.transform.localScale = Vector3.one * planet.radius;
 
-        if (Random.value < repulsorProbability)
+        if (Random.value < repulsorProbability && allowRepulsor)
         {
             repulsorsPlaced++;
             planet.mass *= -1;
