@@ -55,6 +55,7 @@ public class PlanetMeshGenerator : MonoBehaviour
     private Mesh oceanMesh; 
     private Mesh groundMesh;
 
+#if UNITY_EDITOR
     public void GeneratePlanet()
     {
         CleanUp();
@@ -558,4 +559,5 @@ public class PlanetMeshGenerator : MonoBehaviour
         colors[index0] = poly.Color;
         uvs[index0] = poly.UVs[offset];
     }
+#endif
 }
