@@ -196,7 +196,7 @@ public class Trajectory
                 }
                 if (TrajectoryUtil.CheckCollided(delta, planet.radius * 2 + ball.radius))
                 {
-                    atmosphere = 0.9f;
+                    atmosphere = 0.2f;
                 }
                 acceleration = -TrajectoryUtil.CalcGravityAcceleration(delta, ball.mass, planet);
                 
@@ -225,7 +225,7 @@ public class Trajectory
                 dT = 0.7f / lastSpeed;
             }
 
-            var newVelocity = (lastBufferItem.Item2 + acceleration * dT) * atmosphere;
+            var newVelocity = (lastBufferItem.Item2 + acceleration * dT) * (float) Math.Pow(atmosphere, dT);
             var newPosition = lastBufferItem.Item1 + newVelocity * dT;
             var newDT = lastBufferItem.Item3 + dT;
             
