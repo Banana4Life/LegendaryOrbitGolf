@@ -11,6 +11,7 @@ public class World : MonoBehaviour
     public GameObject planetPrefab;
     public GameObject ballPrefab;
     public GameObject planets;
+    public Hud hud;
     private GameObject ballObject;
     public float minPlanetSize = 1;
     public float maxPlanetSize = 2;
@@ -43,7 +44,7 @@ public class World : MonoBehaviour
     {
         NewUniverse();
     }
-
+    
     public void NewUniverse()
     {
         foreach (Planet p in allPlanets)
@@ -75,6 +76,7 @@ public class World : MonoBehaviour
             new Vector3(maxX + extraArea, 0, maxZ + extraArea));
         
         CollectParPlanets(startPlanet, goalPlanet);
+        SetParCount();
     }
     
     public static float DistancePointToLineSegment(Vector2 p, Vector2 a, Vector2 b)
@@ -124,6 +126,26 @@ public class World : MonoBehaviour
         });
     }
 
+    void SetParCount()
+    {
+        int parCount = 0;
+        foreach (Planet planet in parPlanets)
+        {
+            if (planet.mass > 0)
+            {
+                // attractor count 1
+                parCount++;
+            }
+            else
+            {
+                // repulsor count 2
+                parCount += 2;
+            }
+        }
+        
+        hud.SetNewPaarCount(parCount);
+    }
+    
     Planet GenerateStartPlanet()
     {
         var radius = goalSize / 2f;
