@@ -187,11 +187,16 @@ public class Trajectory
             planet = FindPlanetAround(planet, ball.world, ball.radius, lastBallPos, out var delta);
             var lastSpeed = lastBufferItem.Item2.magnitude;
             float dT;
+            var atmosphere = 1f;
             if (planet != null)
             {
                 if (TrajectoryUtil.CheckCollided(delta, planet.radius + ball.radius))
                 {
                     return this;
+                }
+                if (TrajectoryUtil.CheckCollided(delta, planet.radius * 2 + ball.radius))
+                {
+                    atmosphere = 0.9f;
                 }
                 acceleration = -TrajectoryUtil.CalcGravityAcceleration(delta, ball.mass, planet);
                 
@@ -201,12 +206,14 @@ public class Trajectory
                 var accelerationMagnitude = acceleration.magnitude;
                 dT = (float) ((Math.Sqrt((4 * accelerationMagnitude * 0.25f) + Math.Pow(lastSpeed, 2)) - lastSpeed) /  (2 * accelerationMagnitude));
 
-                // Vector3 planetPos = planet.transform.position;
-                // var orbitAroundRadius = planet.radiusGravity;
-                // var magnitude = (lastBallPos - planetPos).magnitude;
+                Vector3 planetPos = planet.transform.position;
+                var gravityWellRadius = planet.radiusGravity;
+                var orbitRadius = (lastBallPos - planetPos).magnitude;
                 // dT *= Math.Min((float) Math.Pow(magnitude / orbitAroundRadius, 2), 1);
-                // var mul = (float) Math.Pow(magnitude / orbitAroundRadius, 2);
-                // dT *= Math.Max(Math.Min(mul, 1), 0.5f);
+                // var mul = (float) Math.Pow(magnitude / orbitAroundRadius, 2); // radius ratio squared
+                // var mul = (float) magnitude / orbitAroundRadius; // radius ratio
+                var mul = (float) (1 / orbitRadius) + 0.1f; // reverse radius ratio 
+                dT *= Math.Max(Math.Min(mul, 1), 0.1f); 
                 // dT *= Math.Min((float) magnitude / orbitAroundRadius * 5, 1);
                 if (acceleration.sqrMagnitude == 0)
                 {
@@ -218,7 +225,7 @@ public class Trajectory
                 dT = 0.7f / lastSpeed;
             }
 
-            var newVelocity = lastBufferItem.Item2 + acceleration * dT;
+            var newVelocity = (lastBufferItem.Item2 + acceleration * dT) * atmosphere;
             var newPosition = lastBufferItem.Item1 + newVelocity * dT;
             var newDT = lastBufferItem.Item3 + dT;
             
