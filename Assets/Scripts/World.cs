@@ -97,23 +97,35 @@ public class World : MonoBehaviour
 
     void CollectParPlanets(Planet start, Planet goal)
     {
-        var startPos = start.transform.position;
-        var goalPos = goal.transform.position;
-        var dir = goalPos - startPos;
-
-        bool Touches(Vector3 point, float radius)
-        {
-            return Vector3.Cross(dir, point - startPos).sqrMagnitude < radius * radius;
-        }
+        var startPos = Helper.ToVector2(start.transform.position);
+        var goalPos3d = goal.transform.position;
+        var goalPos = Helper.ToVector2(goalPos3d);
 
         parPlanets.Clear();
         foreach (var p in allPlanets)
         {
-            if (Touches(p.transform.position, p.radiusGravity))
+            if (HandleUtility.DistancePointToLineSegment(Helper.ToVector2(p.transform.position), startPos, goalPos) < p.radiusGravity)
             {
                 parPlanets.Add(p);
             }
         }
+        
+        parPlanets.Sort((a, b) =>
+        {
+            var distA = (goalPos3d - a.transform.position).sqrMagnitude;
+            var distB = (goalPos3d - b.transform.position).sqrMagnitude;
+            if (distA < distB)
+            {
+                return -1;
+            }
+
+            if (distA > distB)
+            {
+                return 1;
+            }
+
+            return 0;
+        });
     }
 
     Planet GenerateStartPlanet()
@@ -298,5 +310,23 @@ public class World : MonoBehaviour
     static long SlotId(int x, int z)
     {
         return (x & 0xFFFFFFFF) << 32 | (z & 0xFFFFFFFF);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!(startPlanet != null && goalPlanet != null))
+        {
+            return;
+        }
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(startPlanet.transform.position, goalPlanet.transform.position);
+        var last = parPlanets[0];
+        Gizmos.color = Color.green;
+        for (var i = 1; i < this.parPlanets.Count; i++)
+        {
+            var current = parPlanets[i];
+            Gizmos.DrawLine(last.transform.position, current.transform.position);
+            last = current;
+        }
     }
 }
