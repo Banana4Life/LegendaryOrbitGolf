@@ -54,7 +54,7 @@ public class Ball : GravityObject
     }
     public void PlaceInOrbit()
     {
-        var planet = world.goalPlanet;
+        var planet = world.startPlanet;
         var gravityObject = planet.GetComponent<GravityObject>();
         transform.position = planet.transform.position;
         var distance = Random.Range(gravityObject.radius + radius * 2, gravityObject.radiusGravity - radius);

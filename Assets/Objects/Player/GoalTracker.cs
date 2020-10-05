@@ -14,7 +14,6 @@ namespace Objects.Player
             var pos = transform.position;
             var goalPosition = world.goalPlanet.transform.position;
             var dir = goalPosition - pos;
-            Debug.Log(Mathf.Atan2(dir.z, dir.x));
             transform.rotation = Quaternion.AngleAxis((Mathf.Atan2(dir.x, dir.z) + Mathf.PI) * Mathf.Rad2Deg, Vector3.up);
         }
     }
