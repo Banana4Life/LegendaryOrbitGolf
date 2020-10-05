@@ -1,0 +1,13 @@
+{
+  "name": "Legendary Orbit Golf",
+  "description": "Don't get stuck in them loops...",
+  "jam": {
+    "name": "Ludum Dare",
+    "number": 47,
+    "theme": "Stuck in a loop",
+    "site": "https://ldjam.com/events/ludum-dare/47/legendary-orbit-golf",
+    "comments": []
+  },
+  "web": "https://github.com/Banana4Life/LegendaryOrbitGolf/releases/latest",
+  "authors": []
+}
