@@ -95,16 +95,11 @@ namespace Objects.Player
             
             return new Vector2(x, z);
         }
-
-        private Vector2 Clamp(Vector2 x)
-        {
-            return new Vector2(Mathf.Clamp(x.x, -1, 1), Mathf.Clamp(x.y, -1, 1));
-        }
-
+        
         void Update()
         {
             var t = transform;
-            var scroll = Clamp(DetectEdgeScroll() + DetectKeyboardScroll()).normalized;
+            var scroll = Helper.Clamp(DetectEdgeScroll() + DetectKeyboardScroll()).normalized;
             
 
             if (scroll != Vector2.zero)
@@ -112,9 +107,14 @@ namespace Objects.Player
                 _smoothCamera.SetRelativeTarget(scroll * (speed * Time.deltaTime));
             }
 
-            var currentCameraHeight = _cameraTransform.localPosition.y;
-            var newCameraHeight = Mathf.Clamp( currentCameraHeight - (Input.mouseScrollDelta.y * zoomSpeed), minZoom, maxZoom);
-            _cameraTransform.localPosition = new Vector3(0, newCameraHeight, 0);
+            var scrollValue = Input.mouseScrollDelta.y;
+            if (Mathf.Abs(scrollValue) > float.Epsilon)
+            {
+                var currentCameraHeight = _cameraTransform.localPosition.y;
+                var newCameraHeight = Mathf.Clamp(currentCameraHeight - (scrollValue * zoomSpeed), minZoom, maxZoom);
+                _cameraTransform.localPosition = new Vector3(0, newCameraHeight, 0);
+                _smoothCamera.SetZoom(newCameraHeight);
+            }
 
             if (Input.GetButton("Jump"))
             {

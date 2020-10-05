@@ -631,6 +631,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4ba907b3a24feb6cbd9f1190a21f983, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerCamera: {fileID: 70634107}
   rate: 0.1
 --- !u!114 &1542772266
 MonoBehaviour:

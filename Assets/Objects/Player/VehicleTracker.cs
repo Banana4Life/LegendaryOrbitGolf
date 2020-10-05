@@ -7,7 +7,8 @@ namespace Objects.Player
     {
         private PlayerController _playerController;
         private SmoothCamera _smoothCamera;
-        private Ball spaceVehicle;
+        private Ball _spaceVehicle;
+        private Planet _lastOrbitedPlanet;
         
         void Start()
         {
@@ -17,21 +18,30 @@ namespace Objects.Player
 
         void Update()
         {
-            if (!spaceVehicle)
+            if (!_spaceVehicle)
             {
-                spaceVehicle = GameObject.Find("Ball").GetComponent<Ball>();
+                _spaceVehicle = GameObject.Find("Ball").GetComponent<Ball>();
             }
 
             
-            if (spaceVehicle.inOrbitAround)
+            if (_spaceVehicle.inOrbitAround)
             {
-                var pos = spaceVehicle.inOrbitAround.transform.position;
-                _smoothCamera.SetTarget(pos);
+                var planet = _spaceVehicle.inOrbitAround;
+                if (planet != _lastOrbitedPlanet)
+                {
+                    _lastOrbitedPlanet = planet;
+                    var dimensions = new Vector2(2 * planet.radiusGravity, 2 * planet.radiusGravity) * 1.2f;
+                    var distance = Helper.DistanceToFillFrustum(_playerController.playerCamera, dimensions);
+                    _smoothCamera.SetZoomTarget(distance);
+
+                    var pos = _spaceVehicle.inOrbitAround.transform.position;
+                    _smoothCamera.SetTarget(pos);
+                }
             }
             else
             {
-                var spaceVehiclePosition = spaceVehicle.transform.position;
-                Debug.Log(spaceVehicle);
+                _lastOrbitedPlanet = null;
+                var spaceVehiclePosition = _spaceVehicle.transform.position;
                 _smoothCamera.SetTarget(spaceVehiclePosition);
             }
         }
