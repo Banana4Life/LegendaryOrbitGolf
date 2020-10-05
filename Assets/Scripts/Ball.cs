@@ -294,10 +294,10 @@ public class Ball : GravityObject
         lr.endWidth = 0.1f;
         
         var list = trajectory.Positions(1);
-        lr.positionCount = list.Count;
         for (var i = 0; i < list.Count; i++)
         {
             var position = list[i];
+            lr.positionCount = i +1;
             lr.SetPosition(i, position);
         }
 
