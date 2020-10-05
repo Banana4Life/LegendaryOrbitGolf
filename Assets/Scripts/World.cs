@@ -70,7 +70,7 @@ public class World : MonoBehaviour
         var maxX = Mathf.Max(startPos.x, goalPos.x);
         var maxZ = Mathf.Max(startPos.z, goalPos.z);
 
-        var extraArea = Vector3.Distance(goalPos, startPos) * 0.5f;
+        var extraArea = Vector3.Distance(goalPos, startPos) * 0.3f;
 
         GeneratePlanets(new Vector3(minX - extraArea, 0, minZ - extraArea),
             new Vector3(maxX + extraArea, 0, maxZ + extraArea));

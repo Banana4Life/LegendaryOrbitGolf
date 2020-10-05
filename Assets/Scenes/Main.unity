@@ -628,7 +628,7 @@ MonoBehaviour:
   goalPlanet: {fileID: 0}
   attractorsPlaced: 0
   repulsorsPlaced: 0
-  goalDistance: 80
+  goalDistance: 70
   goalMass: 50000
   goalSize: 2
   engageBreaksSound: {fileID: 86048198}
