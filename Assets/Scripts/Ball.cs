@@ -80,6 +80,7 @@ public class Ball : GravityObject
         }
         CheckStillInOrbit();
         UpdateParticleSystems();
+        DrawTrajectory();
     }
 
     private void FollowTrajectory()
@@ -244,6 +245,55 @@ public class Ball : GravityObject
 
         return ballControlledDirection * Math.Min(triangleMagnitude, maxSpeed);
     }
+    
+    
+    private void DrawTrajectory()
+    {
+        if (lr1 == null)
+        {
+            var myLine = new GameObject("Line");
+            lr1 = myLine.AddComponent<LineRenderer>();
+            lr1.transform.parent = world.transform;
+        }
+        DrawTrajectory(_trajectory, Color.gray, Color.blue, lr1);
+        if (lr2 == null)
+        {
+            var myLine = new GameObject("Line");
+            lr2 = myLine.AddComponent<LineRenderer>();
+            lr2.transform.parent = world.transform;
+        }
+        DrawTrajectory(_planTrajectory, Color.white, Color.green, lr2);
+    }
+
+    private LineRenderer lr1;
+    private LineRenderer lr2;
+    
+    private void DrawTrajectory(Trajectory trajectory, Color color, Color colorStable, LineRenderer lr)
+    {
+        if (trajectory == null || trajectory.isEmpty())
+        {
+            return;
+        }
+        
+        lr.transform.position = transform.position;
+        lr.material = new Material(Shader.Find("Sprites/Default"));
+        lr.startColor = trajectory.isStable ? colorStable : color;
+        lr.endColor = trajectory.isStable ? colorStable : color;
+        lr.startWidth = 0.1f;
+        lr.endWidth = 0.1f;
+        
+        var list = trajectory.Positions(1);
+        lr.positionCount = list.Count;
+        for (var i = 0; i < list.Count; i++)
+        {
+            var position = list[i];
+            lr.SetPosition(i, position);
+        }
+
+    }
+    
+
+    
     
 #if UNITY_EDITOR
 
