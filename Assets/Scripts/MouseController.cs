@@ -8,6 +8,7 @@ public class MouseController : MonoBehaviour
 {
     public Camera mainCamera;
     public Ball ball;
+    public GameObject hudObject;
 
     public Vector3 hover;
     private bool holding;
@@ -33,6 +34,7 @@ public class MouseController : MonoBehaviour
             if (ball.HasPlan())
             {
                 ball.SubmitPlan();
+                hudObject.GetComponent<Hud>().AddShot();
             }
             else
             {

@@ -11,6 +11,8 @@ public class World : MonoBehaviour
     public GameObject planetPrefab;
     public GameObject ballPrefab;
     public GameObject planets;
+    public GameObject hudPrefab;
+    private GameObject hudObject;
     private GameObject ballObject;
     public float minPlanetSize = 1;
     public float maxPlanetSize = 2;
@@ -41,7 +43,15 @@ public class World : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        CreateHudObject();
         NewUniverse();
+    }
+
+    private void CreateHudObject()
+    {
+        hudObject = Instantiate(hudPrefab, transform.Find("Player").transform);
+        hudObject.transform.position = Vector3.zero;
+        GetComponent<MouseController>().hudObject = hudObject;
     }
 
     public void NewUniverse()
@@ -75,6 +85,7 @@ public class World : MonoBehaviour
             new Vector3(maxX + extraArea, 0, maxZ + extraArea));
         
         CollectParPlanets(startPlanet, goalPlanet);
+        SetParCount();
     }
     
     public static float DistancePointToLineSegment(Vector2 p, Vector2 a, Vector2 b)
@@ -124,6 +135,26 @@ public class World : MonoBehaviour
         });
     }
 
+    void SetParCount()
+    {
+        int parCount = 0;
+        foreach (Planet planet in parPlanets)
+        {
+            if (planet.mass > 0)
+            {
+                // attractor count 1
+                parCount++;
+            }
+            else
+            {
+                // repulsor count 2
+                parCount += 2;
+            }
+        }
+        
+        hudObject.GetComponent<Hud>().SetNewPaarCount(parCount);
+    }
+    
     Planet GenerateStartPlanet()
     {
         var radius = goalSize / 2f;
