@@ -1169,6 +1169,14 @@ PrefabInstance:
       propertyPath: m_Color.b
       value: 0.007843138
       objectReference: {fileID: 0}
+    - target: {fileID: 8498049857474573269, guid: 8c7398c9fc794de4492941206df7644c, type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 8498049857474573269, guid: 8c7398c9fc794de4492941206df7644c, type: 3}
+      propertyPath: m_FontData.m_MinSize
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8498049858226157610, guid: 8c7398c9fc794de4492941206df7644c, type: 3}
       propertyPath: m_Name
       value: Menu

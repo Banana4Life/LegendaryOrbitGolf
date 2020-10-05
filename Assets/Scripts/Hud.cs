@@ -27,6 +27,6 @@ public class Hud : MonoBehaviour
     
     private void UpdateText()
     {
-        shotCountText.text = $"Shot: {shotCount} / {shotsForPar} for Par";
+        shotCountText.text = $"Shot / Par \n {shotCount} / {shotsForPar}";
     }
 }
