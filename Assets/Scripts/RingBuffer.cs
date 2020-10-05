@@ -55,7 +55,7 @@ public class RingBuffer<T>
         var index = (_head - 1 + Capacity) % Capacity;
         if (index == _tail)
         {
-            throw new IndexOutOfRangeException("Head overtook Head!");
+            throw new IndexOutOfRangeException("Head overtook Tail!");
         }
 
         _buffer[index] = item;

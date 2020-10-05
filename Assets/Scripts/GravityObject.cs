@@ -13,7 +13,6 @@ public class GravityObject : MonoBehaviour
     public bool gravityAffected = false;
     public bool moving = false;
 
-    protected Vector3 acceleration = Vector3.zero;
     public Vector3 velocity = Vector3.zero;
     
     public Planet inOrbitAround;
@@ -60,8 +59,8 @@ public class GravityObject : MonoBehaviour
         
         Gizmos.color = Color.green;
         Gizmos.DrawLine(pos, pos + velocity);
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawLine(pos, pos + acceleration * Time.deltaTime);
+        // Gizmos.color = Color.magenta;
+        // Gizmos.DrawLine(pos, pos + acceleration * Time.deltaTime);
         
         if (this is Ball)
         {
