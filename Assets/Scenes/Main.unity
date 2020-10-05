@@ -256,11 +256,11 @@ MonoBehaviour:
   planetPrefab: {fileID: 857791733385563173, guid: 8f7a886d8487ac1a6afa98f666727e01, type: 3}
   ballPrefab: {fileID: 4749227228164643110, guid: 9ac4c14e8b49798a998b139c697acbfd, type: 3}
   planets: {fileID: 462147430}
-  minPlanetSize: 5
-  maxPlanetSize: 10
+  minPlanetSize: 1
+  maxPlanetSize: 2
   minMass: 20000
   maxMass: 50000
-  cutOffGravitySpeed: 100
+  cutOffGravitySpeed: 250
   planetPrefabs:
   - {fileID: 4351483593322345410, guid: 9bf78de175e4fff4eb8b9d3cac63eab0, type: 3}
   - {fileID: 5304034052924887002, guid: a70f07afc2692994c8f758dfbc0c6c84, type: 3}
@@ -297,7 +297,7 @@ MonoBehaviour:
   ball: {fileID: 0}
   hover: {x: 0, y: 0, z: 0}
   holdingTime: 0
-  maxBumpSpeed: 15
+  maxBumpSpeed: 10
 --- !u!1 &462147430
 GameObject:
   m_ObjectHideFlags: 0
@@ -574,6 +574,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1542772263}
   - component: {fileID: 1542772264}
+  - component: {fileID: 1542772265}
+  - component: {fileID: 1542772266}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -617,7 +619,31 @@ MonoBehaviour:
   startZoom: 0.8
   borderSize: 30
   playerCamera: {fileID: 70634107}
-  background: {fileID: 1878062420}
+--- !u!114 &1542772265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1542772262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4ba907b3a24feb6cbd9f1190a21f983, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rate: 0.1
+--- !u!114 &1542772266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1542772262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01317dd72bafaf04b8ab52cf81de3ee7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1878062420
 GameObject:
   m_ObjectHideFlags: 0
