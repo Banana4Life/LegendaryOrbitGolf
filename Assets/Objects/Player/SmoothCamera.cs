@@ -65,7 +65,6 @@ namespace Objects.Player
                 float newHeight;
                 if (Mathf.Abs(camPos.y - _zoomTarget) < rate)
                 {
-                    Debug.Log("zoom target reached");
                     newHeight = _zoomTarget;
                     _hasZoomTarget = false;
                 }
