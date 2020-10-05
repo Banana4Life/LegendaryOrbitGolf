@@ -224,6 +224,12 @@ public class Trajectory
             {
                 dT = 0.7f / lastSpeed;
             }
+            
+            if (lastSpeed == 0 && acceleration.sqrMagnitude == 0)
+            {
+                return this;
+            }
+            
 
             var newVelocity = (lastBufferItem.Item2 + acceleration * dT) * (float) Math.Pow(atmosphere, dT);
             var newPosition = lastBufferItem.Item1 + newVelocity * dT;
