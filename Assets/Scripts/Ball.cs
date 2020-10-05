@@ -16,9 +16,6 @@ public class Ball : GravityObject
     private Vector3 savePosition;
     private Vector3 saveVelocity;
 
-    public bool inStableOrbit;
-
-
     private Trajectory _trajectory = new Trajectory();
     private Trajectory _planTrajectory = new Trajectory();
     
@@ -54,7 +51,6 @@ public class Ball : GravityObject
         var orbitModifier = (2 / distance - 1 / a);
         velocity = Vector3.forward * Mathf.Sqrt(G * planet.mass * orbitModifier);
         frozen = false;
-        inStableOrbit = true;
 
         movingParticleSystem.Clear();
         breakParticleSystem.Clear();
@@ -196,7 +192,7 @@ public class Ball : GravityObject
     public void StartPlanning()
     {
         // If currently stable save position for later retry
-        if (inStableOrbit)
+        if (_trajectory.isStable)
         {
             savePosition = transform.position;
             saveVelocity = velocity;
@@ -343,6 +339,10 @@ public class Ball : GravityObject
         dead = false;
         transform.position = savePosition;
         velocity = saveVelocity;
+        if (velocity.sqrMagnitude == 0)
+        {
+            PlaceInOrbit();
+        }
         RecalculateTrajectory();
         UnFreeze();
     }
