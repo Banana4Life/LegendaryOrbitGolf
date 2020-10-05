@@ -35,16 +35,17 @@ public class GravityObject : MonoBehaviour
     public static Vector3 CalcGravityAcceleration(Vector3 delta, float mass, GravityObject other)
     {
         var distanceSquared = delta.sqrMagnitude;
-        if (distanceSquared < Mathf.Pow(other.radiusGravity, 2))
+        if (!(distanceSquared < Mathf.Pow(other.radiusGravity, 2)))
         {
-            var forceMagnitude = (G * mass * other.mass) / distanceSquared;
-            var distance = Mathf.Sqrt(distanceSquared);
-            var dax = forceMagnitude * delta.x / distance / mass;
-            var daz = forceMagnitude * delta.z / distance / mass;
-            
-            return new Vector3(dax, 0, daz);
+            return Vector3.zero;
         }
-        return Vector3.zero;
+
+        var forceMagnitude = (G * mass * other.mass) / distanceSquared;
+        var distance = Mathf.Sqrt(distanceSquared);
+        var dax = forceMagnitude * delta.x / distance / mass;
+        var daz = forceMagnitude * delta.z / distance / mass;
+            
+        return new Vector3(dax, 0, daz);
     }
     
     void OnDrawGizmosSelected()
