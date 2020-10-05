@@ -40,7 +40,9 @@ public class Ball : GravityObject
     public World world;
 
     public float minBumpSpeed = 0.5f;
-    public float maxBumpSpeed = 15; 
+    public float maxBumpSpeed = 15;
+
+    public AudioSource engageBreaksSound;
 
     private void Start()
     {
@@ -193,6 +195,7 @@ public class Ball : GravityObject
         velocity *= 0.8f;
         breakParticleSystem.Play();
         RecalculateTrajectory();
+        engageBreaksSound.Play();
         // TODO sounds
     }
 

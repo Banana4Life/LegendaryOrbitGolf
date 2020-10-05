@@ -53,6 +53,8 @@ public class World : MonoBehaviour
     public int goalDistance = 20;
     public float goalMass = 50000f;
     public float goalSize = 2;
+
+    public AudioSource engageBreaksSound;
     
     // Start is called before the first frame update
     void Start()
@@ -135,9 +137,11 @@ public class World : MonoBehaviour
             ballObject = Instantiate(ballPrefab, transform);
             ballObject.name = "Ball";
         }
-        
-        GetComponent<MouseController>().ball = ballObject.GetComponent<Ball>();
-        ballObject.GetComponent<Ball>().PlaceInOrbit(this);
+
+        var ball = ballObject.GetComponent<Ball>();
+        GetComponent<MouseController>().ball = ball;
+        ball.PlaceInOrbit(this);
+        ball.engageBreaksSound = engageBreaksSound;
     }
 
     public void LoadPlanetPrefabs()
