@@ -245,7 +245,8 @@ public class Ball : GravityObject
         return ballControlledDirection * Math.Min(triangleMagnitude, maxSpeed);
     }
     
-    
+#if UNITY_EDITOR
+
     private void OnDrawGizmos()
     {
         DrawTrajectoryGizmos(_trajectory, Color.gray, Color.blue);
@@ -272,7 +273,6 @@ public class Ball : GravityObject
             prevPosition = position;
         }
 
-#if UNITY_EDITOR
         if (!trajectory.isEmpty() && trajectory.IsInterupted())
         {
             Handles.color = Color.red;
@@ -284,9 +284,8 @@ public class Ball : GravityObject
             Handles.color = Color.magenta;
             Handles.DrawWireDisc(new Vector3(trajectory.orbitPoint.x, 0, trajectory.orbitPoint.y),  Vector3.up, orbitPointSize);    
         }
-#endif
-            
     }
+#endif
 
     public bool HasPlan()
     {
