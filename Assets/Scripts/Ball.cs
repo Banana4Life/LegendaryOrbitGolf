@@ -4,18 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-[CustomEditor(typeof(Ball))]
-class BallEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        if (GUILayout.Button("Place in Orbit"))
-        {
-            ((Ball) target).PlaceInOrbit();
-        }
-    }
-}
+
 
 public class Ball : GravityObject
 {
@@ -279,6 +268,7 @@ public class Ball : GravityObject
             prevPosition = position;
         }
 
+#if UNITY_EDITOR
         if (!trajectory.isEmpty() && trajectory.IsInterupted())
         {
             Handles.color = Color.red;
@@ -290,7 +280,7 @@ public class Ball : GravityObject
             Handles.color = Color.magenta;
             Handles.DrawWireDisc(new Vector3(trajectory.orbitPoint.x, 0, trajectory.orbitPoint.y),  Vector3.up, orbitPointSize);    
         }
-        
+#endif
             
     }
 

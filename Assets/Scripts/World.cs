@@ -5,24 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-[CustomEditor(typeof(World))]
-class WorldEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        if (GUILayout.Button("New Universe"))
-        {
-            ((World) target).NewUniverse();
-        }
-
-        if (GUILayout.Button("Load Planet Prefabs"))
-        {
-            ((World) target).LoadPlanetPrefabs();
-        }
-    }
-}
-
 public class World : MonoBehaviour
 {
     public Camera playerCamera;
@@ -94,6 +76,20 @@ public class World : MonoBehaviour
         
         CollectParPlanets(startPlanet, goalPlanet);
     }
+    
+    public static float DistancePointToLineSegment(Vector2 p, Vector2 a, Vector2 b)
+    {
+        float sqrMagnitude = (b - a).sqrMagnitude;
+        if ((double) sqrMagnitude == 0.0)
+            return (p - a).magnitude;
+        float num = Vector2.Dot(p - a, b - a) / sqrMagnitude;
+        if ((double) num < 0.0)
+            return (p - a).magnitude;
+        if ((double) num > 1.0)
+            return (p - b).magnitude;
+        Vector2 vector2 = a + num * (b - a);
+        return (p - vector2).magnitude;
+    }
 
     void CollectParPlanets(Planet start, Planet goal)
     {
@@ -104,7 +100,7 @@ public class World : MonoBehaviour
         parPlanets.Clear();
         foreach (var p in allPlanets)
         {
-            if (HandleUtility.DistancePointToLineSegment(Helper.ToVector2(p.transform.position), startPos, goalPos) < p.radiusGravity)
+            if (DistancePointToLineSegment(Helper.ToVector2(p.transform.position), startPos, goalPos) < p.radiusGravity)
             {
                 parPlanets.Add(p);
             }
@@ -156,6 +152,7 @@ public class World : MonoBehaviour
         ball.engageBreaksSound = engageBreaksSound;
     }
 
+#if UNITY_EDITOR
     public void LoadPlanetPrefabs()
     {
         planetPrefabs.Clear();
@@ -165,6 +162,7 @@ public class World : MonoBehaviour
             planetPrefabs.Add(planet);
         }
     }
+#endif
 
     void GeneratePlanetsInFrustum()
     {
@@ -312,6 +310,7 @@ public class World : MonoBehaviour
         return (x & 0xFFFFFFFF) << 32 | (z & 0xFFFFFFFF);
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (!(startPlanet != null && goalPlanet != null))
@@ -329,4 +328,5 @@ public class World : MonoBehaviour
             last = current;
         }
     }
+#endif
 }

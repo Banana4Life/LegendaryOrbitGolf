@@ -15,6 +15,7 @@ public class GravityObject : MonoBehaviour
     
     public Planet inOrbitAround;
 
+#if UNITY_EDITOR
     void OnDrawGizmosSelected()
     {
         var pos = transform.position;
@@ -39,4 +40,5 @@ public class GravityObject : MonoBehaviour
             }
         }
     }
+#endif
 }

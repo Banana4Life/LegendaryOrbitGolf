@@ -28,27 +28,6 @@ using UnityEngine;
 using UnityEditor;
 using Random = UnityEngine.Random;
 
-[CustomEditor(typeof(PlanetMeshGenerator))]
-class PlanetMeshGeneratorEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        if (GUILayout.Button("Save as Prefab"))
-        {
-            ((PlanetMeshGenerator) target).SaveAsPrefab();
-        }
-        if (GUILayout.Button("Generate Planet"))
-        {
-            ((PlanetMeshGenerator) target).GeneratePlanet();
-        }
-        if (GUILayout.Button("Cleanup"))
-        {
-            ((PlanetMeshGenerator) target).CleanUp();
-        }
-    }
-}
-
 // The Planet class is responsible for generating a tiny procedural planet. It does this by subdividing an Icosahedron, then
 // randomly selecting groups of Polygons to extrude outwards. These become the lowlands and hills of the planet, while the
 // unextruded Polygons become the ocean.
@@ -106,6 +85,7 @@ public class PlanetMeshGenerator : MonoBehaviour
         oceanMesh = null;
         groundMesh = null;
     }
+    
     public void SaveAsPrefab() 
     {
         const string prefabsPath = "Assets/Prefabs";
