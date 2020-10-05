@@ -52,7 +52,7 @@ public class RingBuffer<T>
 
     public void Prepend(T item)
     {
-        var index = (_head - 1 + Capacity) % Capacity;
+        var index = _head == -1 ? 0 : (_head - 1 + Capacity) % Capacity;
         if (index == _tail)
         {
             throw new IndexOutOfRangeException("Head overtook Tail!");
@@ -78,6 +78,12 @@ public class RingBuffer<T>
         _buffer[_head] = default;
         _head = (_head + 1) % Capacity;
         _length--;
+        if (_length == 0)
+        {
+            _head = -1;
+            _tail = -1;
+        }
+        
         return item;
     }
 
@@ -92,6 +98,12 @@ public class RingBuffer<T>
         _buffer[_tail] = default;
         _tail = (_tail - 1 + Capacity) % Capacity;
         _length--;
+        if (_length == 0)
+        {
+            _head = -1;
+            _tail = -1;
+        }
+        
         return item;
     }
 }
