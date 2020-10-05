@@ -36,7 +36,7 @@ public class MouseController : MonoBehaviour
             mousePosition.z = mainCamera.transform.position.y;
             hover = mainCamera.ScreenToWorldPoint(mousePosition);
             holding = false;
-            ball.Bump(-BumpSpeed(ball.transform.position, ball.velocity, maxBumpSpeed));
+            ball.Bump(-Ball.BumpSpeed(ball.transform.position, ball.velocity, maxBumpSpeed, hover, holdingTime));
         }
         else if (holding)
         {
@@ -72,74 +72,31 @@ public class MouseController : MonoBehaviour
 
         if (holding)
         {
-            // TODO draw it
+            ball.GenerateTrajectory(maxBumpSpeed, hover, holdingTime);
         }
     }
 
     private void OnDrawGizmos()
     {
-        var world = GameObject.Find("World").GetComponent<World>();
-        if (holding)
+        if (!holding)
         {
-            var ballPos = ball.transform.position;
+            return;
+        }
 
-            var bumbSpeed = BumpSpeed(ballPos, ball.velocity, maxBumpSpeed);
-            // Gizmos.color = Color.white;
-            // Gizmos.DrawLine(ballPos, ballPos + bumbSpeed * 3);
-            // Gizmos.color = Color.yellow;
-            // Gizmos.DrawLine(ballPos, hover);
-
-            var pseudoDt = 0.001f;
-            var v = ball.velocity - bumbSpeed;
-            for (var i = 0; i < 20000; i++)
+        var trajectory = ball.trajectory;
+        Debug.Log(trajectory.Length);
+        for (int i = 0; i < trajectory.Length; i++)
+        {
+            if (i == trajectory.Length - 1 && i != trajectory.Capacity - 1)
             {
-                var acceleration = Vector3.zero;
-                foreach (var planet in world.allPlanets)
-                {
-                    var delta = ballPos - planet.transform.position;
-                    if (GravityObject.CheckCollided(delta, planet.radius + ball.radius))
-                    {
-                        Gizmos.color = Color.red;
-                        Gizmos.DrawWireSphere(ballPos, ball.radius);
-                        return;
-                    }
-
-                    acceleration -= GravityObject.CalcGravityAcceleration(delta, ball.mass, planet);
-                }
-
-                v += acceleration * pseudoDt;
-                ballPos += v * pseudoDt;
-
-                if (i % 100 == 0)
-                {
-                    Handles.color = Color.white;
-                    Handles.DrawWireDisc(ballPos, Vector3.up, ball.radius);
-                }
+                Handles.color = Color.red;
             }
+            else
+            {
+                Handles.color = Color.white;
+            }
+            
+            Handles.DrawWireDisc(trajectory[i].Item1, Vector3.up, ball.radius);
         }
-    }
-
-    private Vector3 BumpSpeed(Vector3 ballPos, Vector3 ballVelocity, float maxSpeed)
-    {
-        var minSpeed = 1.2f;
-
-        var playerControlledDirection = -(hover - ballPos).normalized;
-        var ballControlledDirection = -ballVelocity.normalized;
-
-        // Linear curve
-        var linearMagnitude = holdingTime * maxSpeed;
-
-        // Sinus curve with min speed
-        var p = 8;
-        var triangleMagnitude = (float) (2 * Math.Abs(2 * ((holdingTime / p) - Math.Floor((holdingTime / p) + 0.5)))) * (maxSpeed - minSpeed) / 2 + minSpeed;
-        var sinusMagnitude = (float) (Math.Sin(0.6 * holdingTime - 1.57) * (maxSpeed - minSpeed) / 2 + (maxSpeed / 2 + minSpeed));
-
-        // var magnitude = Math.Min(linearMagnitude, 5);
-        if (ballVelocity.sqrMagnitude == 0)
-        {
-            return playerControlledDirection * Math.Min(minSpeed + linearMagnitude, maxSpeed);
-        }
-
-        return ballControlledDirection * Math.Min(triangleMagnitude, maxSpeed);
     }
 }
