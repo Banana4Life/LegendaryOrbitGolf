@@ -2,6 +2,8 @@
 
 public class MainMenu : MonoBehaviour
 {
+    public Hud hud;
+    
     public void PlayGame()
     {
         var world = FindObjectOfType<World>();
@@ -9,6 +11,8 @@ public class MainMenu : MonoBehaviour
 
         // Hide menu
         GameObject.Find("Menu").SetActive(false);
+        // Show hud
+        hud.gameObject.SetActive(true);
     }
 
     public void QuitGame()

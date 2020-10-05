@@ -5,7 +5,7 @@ public class Hud : MonoBehaviour
 {
     public int shotCount;
     public int shotsForPar;
-    private Text shotCountText;
+    public Text shotCountText;
     
     public void SetNewPaarCount(int paar)
     {
@@ -22,12 +22,6 @@ public class Hud : MonoBehaviour
     
     private void UpdateText()
     {
-        if (!shotCountText)
-        {
-            shotCountText = gameObject.GetComponentInChildren<Text>();
-            shotCountText.text = "";
-        }
-        
         shotCountText.text = $"Shot: {shotCount} / {shotsForPar} for Par";
     }
 }

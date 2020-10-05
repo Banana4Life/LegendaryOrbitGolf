@@ -11,8 +11,7 @@ public class World : MonoBehaviour
     public GameObject planetPrefab;
     public GameObject ballPrefab;
     public GameObject planets;
-    public GameObject hudPrefab;
-    private GameObject hudObject;
+    public Hud hud;
     private GameObject ballObject;
     public float minPlanetSize = 1;
     public float maxPlanetSize = 2;
@@ -43,17 +42,9 @@ public class World : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CreateHudObject();
         NewUniverse();
     }
-
-    private void CreateHudObject()
-    {
-        hudObject = Instantiate(hudPrefab, transform.Find("Player").transform);
-        hudObject.transform.position = Vector3.zero;
-        GetComponent<MouseController>().hudObject = hudObject;
-    }
-
+    
     public void NewUniverse()
     {
         foreach (Planet p in allPlanets)
@@ -152,7 +143,7 @@ public class World : MonoBehaviour
             }
         }
         
-        hudObject.GetComponent<Hud>().SetNewPaarCount(parCount);
+        hud.SetNewPaarCount(parCount);
     }
     
     Planet GenerateStartPlanet()
