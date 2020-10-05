@@ -9,14 +9,19 @@ public class Hud : MonoBehaviour
     
     public void SetNewPaarCount(int paar)
     {
-        shotCount = 0;
         shotsForPar = paar;
-        UpdateText();
+        ResetShots();
     }
 
     public void AddShot()
     {
         shotCount++;
+        UpdateText();
+    }
+
+    public void ResetShots()
+    {
+        shotCount = 0;
         UpdateText();
     }
     

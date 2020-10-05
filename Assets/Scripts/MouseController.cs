@@ -72,7 +72,8 @@ public class MouseController : MonoBehaviour
 
         if (Input.GetButtonDown("BackSpace"))
         {
-            ball.Revive();
+            ball.PlaceInOrbit();
+            hud.ResetShots();
         }
 
         if (holding)
