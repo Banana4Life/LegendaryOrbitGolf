@@ -84,7 +84,6 @@ public class MouseController : MonoBehaviour
         }
 
         var trajectory = ball.trajectory;
-        Debug.Log(trajectory.Length);
         for (int i = 0; i < trajectory.Length; i++)
         {
             if (i == trajectory.Length - 1 && i != trajectory.Capacity - 1)
