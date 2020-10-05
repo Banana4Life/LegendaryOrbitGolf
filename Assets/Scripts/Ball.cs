@@ -249,33 +249,44 @@ public class Ball : GravityObject
     
     private void DrawTrajectory()
     {
+        if (lr1 != null)
+        {
+            lr1.transform.parent = null;
+            Destroy(lr1);
+            lr1 = null;
+        }
         if (lr1 == null)
         {
-            var myLine = new GameObject("Line");
-            lr1 = myLine.AddComponent<LineRenderer>();
+            lr1 = new GameObject("Line1");
             lr1.transform.parent = world.transform;
         }
         DrawTrajectory(_trajectory, Color.gray, Color.blue, lr1);
+        if (lr2 != null)
+        {
+            lr2.transform.parent = null;
+            Destroy(lr2);
+            lr2 = null;
+        }
         if (lr2 == null)
         {
-            var myLine = new GameObject("Line");
-            lr2 = myLine.AddComponent<LineRenderer>();
+            lr2 = new GameObject("Line2");
             lr2.transform.parent = world.transform;
         }
         DrawTrajectory(_planTrajectory, Color.white, Color.green, lr2);
     }
 
-    private LineRenderer lr1;
-    private LineRenderer lr2;
+    private GameObject lr1;
+    private GameObject lr2;
     
-    private void DrawTrajectory(Trajectory trajectory, Color color, Color colorStable, LineRenderer lr)
+    private void DrawTrajectory(Trajectory trajectory, Color color, Color colorStable, GameObject go)
     {
         if (trajectory == null || trajectory.isEmpty())
         {
             return;
         }
+        LineRenderer lr = go.AddComponent<LineRenderer>();
         
-        lr.transform.position = transform.position;
+        go.transform.position = transform.position;
         lr.material = new Material(Shader.Find("Sprites/Default"));
         lr.startColor = trajectory.isStable ? colorStable : color;
         lr.endColor = trajectory.isStable ? colorStable : color;
