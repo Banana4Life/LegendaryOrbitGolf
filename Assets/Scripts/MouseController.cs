@@ -17,6 +17,11 @@ public class MouseController : MonoBehaviour
 
     void Update()
     {
+        if (!ball)
+        {
+            return;
+        }
+        
         var mousePosition = Input.mousePosition;
         if (Input.GetButtonDown("Fire3"))
         {
@@ -61,7 +66,6 @@ public class MouseController : MonoBehaviour
                 ball.EngangeBreaks();
             }
         }
-
 
         if (Input.GetButtonDown("BackSpace"))
         {

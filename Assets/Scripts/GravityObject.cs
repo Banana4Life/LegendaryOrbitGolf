@@ -10,8 +10,6 @@ public class GravityObject : MonoBehaviour
     public float radiusGravity;
     public float mass;
     public bool frozen = false;
-    public bool gravityAffected = false;
-    public bool moving = false;
 
     public Vector3 velocity = Vector3.zero;
     
