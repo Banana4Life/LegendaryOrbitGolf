@@ -730,7 +730,7 @@ MonoBehaviour:
   minMass: 20000
   maxMass: 50000
   cutOffGravitySpeed: 250
-  repulsorProbability: 0
+  repulsorProbability: 0.1
   planetPrefabs:
   - {fileID: 4351483593322345410, guid: 9bf78de175e4fff4eb8b9d3cac63eab0, type: 3}
   - {fileID: 5304034052924887002, guid: a70f07afc2692994c8f758dfbc0c6c84, type: 3}

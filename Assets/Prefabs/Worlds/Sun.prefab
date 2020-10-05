@@ -204,7 +204,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 4.583e-41, y: -1.0975622e-19, z: 4.583e-41, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -227,6 +227,26 @@ PrefabInstance:
       propertyPath: scalingMode
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1006743669524476718, guid: 544c9f4fbde1b1b3fb6eb08a4171418f, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1006743669524476718, guid: 544c9f4fbde1b1b3fb6eb08a4171418f, type: 3}
+      propertyPath: InitialModule.startLifetime.minScalar
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1006743669524476718, guid: 544c9f4fbde1b1b3fb6eb08a4171418f, type: 3}
+      propertyPath: InitialModule.startSize.minScalar
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1006743669524476718, guid: 544c9f4fbde1b1b3fb6eb08a4171418f, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1006743669524476718, guid: 544c9f4fbde1b1b3fb6eb08a4171418f, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 250
+      objectReference: {fileID: 0}
     - target: {fileID: 4021521824622119893, guid: 544c9f4fbde1b1b3fb6eb08a4171418f, type: 3}
       propertyPath: m_Name
       value: PS Surface
@@ -237,7 +257,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8985612733979032725, guid: 544c9f4fbde1b1b3fb6eb08a4171418f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8985612733979032725, guid: 544c9f4fbde1b1b3fb6eb08a4171418f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -305,6 +325,26 @@ PrefabInstance:
       propertyPath: scalingMode
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5149130069800980085, guid: ac423384696c3ba62a52c7533d702000, type: 3}
+      propertyPath: lengthInSec
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5149130069800980085, guid: ac423384696c3ba62a52c7533d702000, type: 3}
+      propertyPath: InitialModule.startLifetime.minScalar
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5149130069800980085, guid: ac423384696c3ba62a52c7533d702000, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 5149130069800980085, guid: ac423384696c3ba62a52c7533d702000, type: 3}
+      propertyPath: InitialModule.startSize.minScalar
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5149130069800980085, guid: ac423384696c3ba62a52c7533d702000, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 8198874367237610468, guid: ac423384696c3ba62a52c7533d702000, type: 3}
       propertyPath: m_Name
       value: PS Corona
@@ -319,7 +359,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8280127053727564537, guid: ac423384696c3ba62a52c7533d702000, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 8280127053727564537, guid: ac423384696c3ba62a52c7533d702000, type: 3}
       propertyPath: m_LocalPosition.z
