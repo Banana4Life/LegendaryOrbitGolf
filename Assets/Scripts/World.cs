@@ -38,7 +38,10 @@ public class World : MonoBehaviour
     public float goalSize = 2;
 
     public AudioSource engageBreaksSound;
-    
+
+
+    public LineRenderer lr1;
+    public LineRenderer lr2;
     // Start is called before the first frame update
     void Start()
     {
