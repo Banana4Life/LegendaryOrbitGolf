@@ -194,9 +194,9 @@ public class Trajectory
                 {
                     return this;
                 }
-                if (TrajectoryUtil.CheckCollided(delta, planet.radius * 2 + ball.radius))
+                if (TrajectoryUtil.CheckCollided(delta, planet.radius * 1.5f + ball.radius))
                 {
-                    atmosphere = 0.2f;
+                    atmosphere = 0.3f;
                 }
                 acceleration = -TrajectoryUtil.CalcGravityAcceleration(delta, ball.mass, planet);
                 
