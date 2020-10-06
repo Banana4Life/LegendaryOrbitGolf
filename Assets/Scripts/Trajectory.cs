@@ -149,7 +149,7 @@ public class Trajectory
         return true;
     }
 
-    public Planet FindPlanetAround(Planet current, World world, float ballRadius, Vector3 pos, out Vector3 delta)
+    public static Planet FindPlanetAround(Planet current, World world, float ballRadius, Vector3 pos, out Vector3 delta)
     {
         delta = Vector3.zero;
         if (current != null)

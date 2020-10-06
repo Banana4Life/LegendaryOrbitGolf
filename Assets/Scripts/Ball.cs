@@ -43,11 +43,10 @@ public class Ball : GravityObject
         // v = sqrt(GM * (2/r - 1/a))
         // a = 1/2 of longest axis
         var startPlanet = world.startPlanet;
-        var planet = startPlanet.GetComponent<GravityObject>();
         transform.position = startPlanet.transform.position;
-        var distance = Random.Range(planet.radius * 1.5f + radius * 2, planet.radiusGravity - radius);
+        var distance = Random.Range(startPlanet.radius * 1.5f + radius * 2, startPlanet.radiusGravity - radius);
         transform.Translate(distance, 0, 0);
-        var a = Random.Range((distance + startPlanet.radius * 1.5f + radius) / 2, (distance + planet.radiusGravity - startPlanet.radius - radius) / 2);
+        var a = Random.Range((distance + startPlanet.radius * 1.5f + radius) / 2, (distance + startPlanet.radiusGravity - startPlanet.radius - radius) / 2);
         var orbitModifier = (2 / distance - 1 / a);
         velocity = Vector3.forward * Mathf.Sqrt(G * startPlanet.mass * orbitModifier);
         frozen = false;
@@ -245,10 +244,8 @@ public class Ball : GravityObject
         DrawTrajectory(_planTrajectory, Color.white, Color.green, world.lr2);
     }
 
-    private void DrawTrajectory(Trajectory trajectory, Color color, Color colorStable, LineRenderer go)
+    private static void DrawTrajectory(Trajectory trajectory, Color color, Color colorStable, LineRenderer lr)
     {
-        LineRenderer lr = go.GetComponent<LineRenderer>();
-        
         if (trajectory == null || trajectory.IsEmpty())
         {
             lr.enabled = false;
@@ -271,7 +268,6 @@ public class Ball : GravityObject
             lr.positionCount = i +1;
             lr.SetPosition(i, position);
         }
-
     }
     
 #if UNITY_EDITOR
