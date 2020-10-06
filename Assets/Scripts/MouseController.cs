@@ -85,6 +85,7 @@ public class MouseController : MonoBehaviour
             {
                 ball.ScrapPlan();
                 holding = false;
+                GetComponentInChildren<PlayerController>().disableScroll = false;
             }
             else
             {

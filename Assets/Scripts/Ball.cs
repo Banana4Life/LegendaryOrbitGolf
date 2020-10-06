@@ -46,16 +46,16 @@ public class Ball : GravityObject
     {
         // v = sqrt(GM * (2/r - 1/a))
         // a = 1/2 of longest axis
-        var planet = world.startPlanet;
-        var gravityObject = planet.GetComponent<GravityObject>();
-        transform.position = planet.transform.position;
-        var distance = Random.Range(gravityObject.radius + radius * 2, gravityObject.radiusGravity - radius);
+        var startPlanet = world.startPlanet;
+        var planet = startPlanet.GetComponent<GravityObject>();
+        transform.position = startPlanet.transform.position;
+        var distance = Random.Range(planet.radius *1.5f + radius * 2, planet.radiusGravity - radius);
         transform.Translate(distance, 0, 0);
-        var a = Random.Range((distance + planet.radius + radius) / 2, (distance + gravityObject.radiusGravity - planet.radius - radius) / 2);
+        var a = Random.Range((distance + startPlanet.radius + radius) / 2, (distance + planet.radiusGravity - startPlanet.radius - radius) / 2);
         var orbitModifier = (2 / distance - 1 / a);
-        velocity = Vector3.forward * Mathf.Sqrt(G * planet.mass * orbitModifier);
+        velocity = Vector3.forward * Mathf.Sqrt(G * startPlanet.mass * orbitModifier);
         frozen = false;
-        Debug.Log("Placed with " + a + "/" + gravityObject.radiusGravity + " around " + gravityObject.name);
+        Debug.Log("Placed with " + a + "/" + planet.radiusGravity + " around " + planet.name);
 
         movingParticleSystem.Clear();
         brakeParticleSystem.Clear();
