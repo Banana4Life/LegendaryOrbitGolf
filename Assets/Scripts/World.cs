@@ -160,9 +160,8 @@ public class World : MonoBehaviour
 
     Planet GenerateGoalPlanet()
     {
-        var goalPosition = Helper.GridPosition(Random.insideUnitCircle * GridCellSize * goalDistance, GridCellSize);
         var radius = goalSize / 2f;
-        return GenerateRandomPlanetAt("goal", goalPosition.x, goalPosition.y, radius, goalMass, CalculateGravityRadius(goalMass, radius), false);
+        return GenerateRandomPlanetAt("goal", goalDistance, goalDistance, radius, goalMass, CalculateGravityRadius(goalMass, radius), false);
     }
 
     public void PlaceBall()

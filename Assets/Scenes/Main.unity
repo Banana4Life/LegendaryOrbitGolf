@@ -476,7 +476,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 79009537}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -30}
+  m_LocalPosition: {x: 0, y: 0, z: -80}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2112430187}
@@ -634,7 +634,6 @@ MonoBehaviour:
   goalMass: 50000
   goalSize: 2
   goalParticlePrefab: {fileID: 5065056741092912301, guid: ae20be795a43b77dc9d97631d1b7e6c8, type: 3}
-  engageBrakesSound: {fileID: 0}
   lr1: {fileID: 1609620336}
   lr2: {fileID: 74412370}
 --- !u!114 &217738353
@@ -655,7 +654,6 @@ MonoBehaviour:
   hover: {x: 0, y: 0, z: 0}
   holdingTime: 0
   maxBumpSpeed: 10
-  bumpSound: {fileID: 582310615}
 --- !u!1 &295662796
 GameObject:
   m_ObjectHideFlags: 0
@@ -2205,7 +2203,7 @@ Transform:
   m_GameObject: {fileID: 2112430186}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 0.0055, y: 0.0055, z: 0.0055}
+  m_LocalScale: {x: 0.002, y: 0.002, z: 0.002}
   m_Children:
   - {fileID: 79009538}
   m_Father: {fileID: 70634109}
