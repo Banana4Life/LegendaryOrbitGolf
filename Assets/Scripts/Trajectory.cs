@@ -95,6 +95,7 @@ public class Trajectory
         // e = 1 - (2/ (((a*(1-e))/(a*(1+e)))+1))
         // Debug.Log("e: " + Math.Round(eMagnitude, 3) + " a:" +Math.Round(semiMajoral, 3) + " rMax:" + orbitAround.radiusGravity + " stable: " + isStable);
 
+        isAnalyzed = true;
         return isStable;
     }
 

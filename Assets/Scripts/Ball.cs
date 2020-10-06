@@ -288,6 +288,8 @@ public class Ball : GravityObject
     {
         DrawTrajectoryGizmos(_trajectory, Color.gray, Color.blue);
         DrawTrajectoryGizmos(_planTrajectory, Color.white, Color.green);
+        Handles.color = Color.cyan;
+        Handles.DrawWireDisc(savePosition, Vector3.up, radius);
     }
 
     private void DrawTrajectoryGizmos(Trajectory trajectory, Color color, Color colorStable)
