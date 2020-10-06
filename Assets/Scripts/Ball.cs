@@ -49,9 +49,9 @@ public class Ball : GravityObject
         var startPlanet = world.startPlanet;
         var planet = startPlanet.GetComponent<GravityObject>();
         transform.position = startPlanet.transform.position;
-        var distance = Random.Range(planet.radius *1.5f + radius * 2, planet.radiusGravity - radius);
+        var distance = Random.Range(planet.radius * 1.5f + radius * 2, planet.radiusGravity - radius);
         transform.Translate(distance, 0, 0);
-        var a = Random.Range((distance + startPlanet.radius + radius) / 2, (distance + planet.radiusGravity - startPlanet.radius - radius) / 2);
+        var a = Random.Range((distance + startPlanet.radius * 1.5f + radius) / 2, (distance + planet.radiusGravity - startPlanet.radius - radius) / 2);
         var orbitModifier = (2 / distance - 1 / a);
         velocity = Vector3.forward * Mathf.Sqrt(G * startPlanet.mass * orbitModifier);
         frozen = false;
