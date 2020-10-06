@@ -53,12 +53,12 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   inOrbitAround: {fileID: 0}
   movingParticleSystem: {fileID: 8433558184093444046}
-  breakParticleSystem: {fileID: 6414866999223499510}
+  brakeParticleSystem: {fileID: 6414866999223499510}
   dead: 0
   world: {fileID: 0}
   minBumpSpeed: 0.5
   maxBumpSpeed: 15
-  engageBreaksSound: {fileID: 0}
+  engageBrakeSound: {fileID: 0}
 --- !u!1 &8264306232524723490
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,7 +207,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5685983679381813398, guid: 162e5c4c1feefccbc8e44ab5e19a0b30, type: 3}
       propertyPath: m_Name
-      value: BreakParticleEmitter
+      value: BrakeParticleEmitter
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 162e5c4c1feefccbc8e44ab5e19a0b30, type: 3}

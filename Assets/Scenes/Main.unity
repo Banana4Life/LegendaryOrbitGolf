@@ -556,7 +556,7 @@ GameObject:
   - component: {fileID: 86048197}
   - component: {fileID: 86048198}
   m_Layer: 0
-  m_Name: Break-Sound
+  m_Name: Brake-Sound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -725,6 +725,7 @@ MonoBehaviour:
   ballPrefab: {fileID: 4749227228164643110, guid: 9ac4c14e8b49798a998b139c697acbfd, type: 3}
   planets: {fileID: 462147430}
   hud: {fileID: 11294575}
+  ballObject: {fileID: 0}
   minPlanetSize: 1
   maxPlanetSize: 2
   minMass: 20000
@@ -760,7 +761,7 @@ MonoBehaviour:
   goalMass: 50000
   goalSize: 2
   goalParticlePrefab: {fileID: 5065056741092912301, guid: ae20be795a43b77dc9d97631d1b7e6c8, type: 3}
-  engageBreaksSound: {fileID: 86048198}
+  engageBrakesSound: {fileID: 86048198}
   lr1: {fileID: 1609620336}
   lr2: {fileID: 74412370}
 --- !u!114 &217738353
@@ -1635,6 +1636,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01317dd72bafaf04b8ab52cf81de3ee7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _lastOrbitedPlanet: {fileID: 0}
 --- !u!1 &1609620334
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 
@@ -9,7 +10,7 @@ using Random = UnityEngine.Random;
 public class Ball : GravityObject
 {
     public ParticleSystem movingParticleSystem;
-    public ParticleSystem breakParticleSystem;
+    public ParticleSystem brakeParticleSystem;
 
     public bool dead;
 
@@ -26,7 +27,7 @@ public class Ball : GravityObject
     public float minBumpSpeed = 0.5f;
     public float maxBumpSpeed = 15;
 
-    public AudioSource engageBreaksSound;
+    public AudioSource engageBrakeSound;
 
     private void Start()
     {
@@ -54,7 +55,7 @@ public class Ball : GravityObject
         Debug.Log("Placed with " + a + "/" + gravityObject.radiusGravity + " around " + gravityObject.name);
 
         movingParticleSystem.Clear();
-        breakParticleSystem.Clear();
+        brakeParticleSystem.Clear();
 
         savePosition = transform.position;
         saveVelocity = velocity;
@@ -176,12 +177,12 @@ public class Ball : GravityObject
         RecalculateTrajectory();
     }
 
-    public void EngangeBreaks()
+    public void EngangeBrakes()
     {
         velocity *= 0.8f;
-        breakParticleSystem.Play();
+        brakeParticleSystem.Play();
         RecalculateTrajectory();
-        engageBreaksSound.Play();
+        engageBrakeSound.Play();
         // TODO sounds
     }
 

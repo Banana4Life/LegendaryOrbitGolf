@@ -39,7 +39,7 @@ public class World : MonoBehaviour
 
     public GameObject goalParticlePrefab;
 
-    public AudioSource engageBreaksSound;
+    public AudioSource engageBrakesSound;
 
 
     public LineRenderer lr1;
@@ -179,7 +179,7 @@ public class World : MonoBehaviour
         var ball = ballObject.GetComponent<Ball>();
         GetComponent<MouseController>().ball = ball;
         ball.PlaceInOrbit(this);
-        ball.engageBreaksSound = engageBreaksSound;
+        ball.engageBrakeSound = engageBrakesSound;
     }
 
 #if UNITY_EDITOR
