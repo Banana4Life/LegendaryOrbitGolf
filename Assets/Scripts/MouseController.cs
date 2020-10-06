@@ -75,7 +75,8 @@ public class MouseController : MonoBehaviour
             hover.y = 0;
 
             var vv = ball.velocity.magnitude;
-            holdingTime += Input.mouseScrollDelta.y * Time.deltaTime * (vv == 0 ? 10 : vv);
+            // holdingTime += Input.mouseScrollDelta.y * Time.deltaTime * (vv == 0 ? 10 : vv);
+            holdingTime += (float) Math.Round(Input.mouseScrollDelta.y * Time.deltaTime * (vv == 0 ? 10 : vv) /5, 2);
         }
 
         if (Input.GetButtonDown("Fire2"))
