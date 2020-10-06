@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using Objects.Player;
-using UnityEditor;
 using UnityEngine;
 
 public class MouseController : MonoBehaviour
@@ -12,7 +9,7 @@ public class MouseController : MonoBehaviour
     public Hud hud;
 
     public Vector3 hover;
-    private bool holding;
+    private bool _holding;
     public float holdingTime;
 
     public float maxBumpSpeed = 10;
@@ -32,24 +29,24 @@ public class MouseController : MonoBehaviour
         }
         else if (Input.GetButtonDown("Fire1"))
         {
-            if (holding)
+            if (_holding)
             {
                 mousePosition.z = mainCamera.transform.position.y;
                 hover = mainCamera.ScreenToWorldPoint(mousePosition);
-                holding = false;
+                _holding = false;
                 ball.PlanTrajectory(hover, holdingTime);
                 GetComponentInChildren<PlayerController>().disableScroll = false;
                 hud.AddShot();
                 if (ball.inOrbitAround)
                 {
-                    var distance = Helper.DistanceToFillFrustum(GetComponentInChildren<PlayerController>().playerCamera, Vector2.one * ball.inOrbitAround.radiusGravity *2);
+                    var distance = Helper.DistanceToFillFrustum(GetComponentInChildren<PlayerController>().playerCamera, Vector2.one * (ball.inOrbitAround.radiusGravity * 2));
                     GetComponentInChildren<SmoothCamera>().SetZoomTarget(distance);
                 }
                 ball.SubmitPlan();
             }
             else
             {
-                holding = true;
+                _holding = true;
                 holdingTime = 0;
                 ball.StartPlanning();
                 if (ball.velocity.sqrMagnitude == 0)
@@ -67,7 +64,7 @@ public class MouseController : MonoBehaviour
                 GetComponentInChildren<PlayerController>().disableScroll = true;
             }
         }
-        else if (holding)
+        else if (_holding)
         {
             // holdingTime += Time.deltaTime;
             mousePosition.z = mainCamera.transform.position.y;
@@ -84,7 +81,7 @@ public class MouseController : MonoBehaviour
             if (ball.HasPlan()) // Abort with R-Click
             {
                 ball.ScrapPlan();
-                holding = false;
+                _holding = false;
                 GetComponentInChildren<PlayerController>().disableScroll = false;
             }
             else
@@ -96,11 +93,11 @@ public class MouseController : MonoBehaviour
         if (Input.GetButtonDown("BackSpace"))
         {
             ball.ScrapPlan();
-            holding = false;
+            _holding = false;
             ball.Revive();
         }
 
-        if (holding)
+        if (_holding)
         {
             ball.PlanTrajectory(hover, holdingTime);
         }

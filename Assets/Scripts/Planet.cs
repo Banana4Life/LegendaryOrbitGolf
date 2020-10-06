@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Planet : GravityObject
 {
     public ParticleSystem gravityWellParticleEmitter;
     public ParticleSystem reverseGravityWellParticleEmitter;
-    private GameObject currentModel;
+    private GameObject _currentModel;
     private GameObject _goal;
 
     public void DeleteGoal()
@@ -14,8 +13,8 @@ public class Planet : GravityObject
         Destroy(_goal);
     }
 
-    public void setGoal(GameObject goal)
+    public void SetGoal(GameObject goal)
     {
-        this._goal = goal;
+        _goal = goal;
     }
 }

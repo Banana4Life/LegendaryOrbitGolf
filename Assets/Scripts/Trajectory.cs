@@ -62,8 +62,6 @@ public class Trajectory
         
         
         var planetPos = orbitAround.transform.position;
-        var planetPos2 = new Vector2(planetPos.x, planetPos.z);
-        var planetPos2Line = new Vector2(planetPos.x, planetPos.z + orbitAround.radiusGravity);
 
         var r = (points.Head.Item1 - planetPos);
         var v = points.Head.Item2;
@@ -90,7 +88,6 @@ public class Trajectory
         {
             isStable = false;
         }
-            
         
         // e = 1 - (2/ ((ra/rp)+1))
         // e = 1 - (2/ (((a*(1-e))/(a*(1+e)))+1))
@@ -208,24 +205,26 @@ public class Trajectory
                 }
                 acceleration = -TrajectoryUtil.CalcGravityAcceleration(delta, ball.mass, planet);
                 
-                // ((a * t) +v) * t = d
-                // x = sqrt(4ad+v²) + v / 2a
-                // or when a = 0 => d / v
-                var accelerationMagnitude = acceleration.magnitude;
-                dT = (float) ((Math.Sqrt((4 * accelerationMagnitude * 0.25f) + Math.Pow(lastSpeed, 2)) - lastSpeed) /  (2 * accelerationMagnitude));
-
-                Vector3 planetPos = planet.transform.position;
-                var gravityWellRadius = planet.radiusGravity;
-                var orbitRadius = (lastBallPos - planetPos).magnitude;
-                // dT *= Math.Min((float) Math.Pow(magnitude / orbitAroundRadius, 2), 1);
-                // var mul = (float) Math.Pow(magnitude / orbitAroundRadius, 2); // radius ratio squared
-                // var mul = (float) magnitude / orbitAroundRadius; // radius ratio
-                var mul = (float) (1 / orbitRadius) + 0.1f; // reverse radius ratio 
-                dT *= Math.Max(Math.Min(mul, 1), 0.1f); 
-                // dT *= Math.Min((float) magnitude / orbitAroundRadius * 5, 1);
                 if (acceleration.sqrMagnitude == 0)
                 {
                     dT = 0.7f / lastSpeed;
+                }
+                else
+                {
+                    // ((a * t) +v) * t = d
+                    // x = sqrt(4ad+v²) + v / 2a
+                    // or when a = 0 => d / v
+                    var accelerationMagnitude = acceleration.magnitude;
+                    dT = (float) ((Math.Sqrt((4 * accelerationMagnitude * 0.25f) + Math.Pow(lastSpeed, 2)) - lastSpeed) / (2 * accelerationMagnitude));
+
+                    Vector3 planetPos = planet.transform.position;
+                    var orbitRadius = (lastBallPos - planetPos).magnitude;
+                    // dT *= Math.Min((float) Math.Pow(magnitude / orbitAroundRadius, 2), 1);
+                    // var mul = (float) Math.Pow(magnitude / orbitAroundRadius, 2); // radius ratio squared
+                    // var mul = (float) magnitude / orbitAroundRadius; // radius ratio
+                    var mul = (float) (1 / orbitRadius) + 0.1f; // reverse radius ratio 
+                    dT *= Math.Max(Math.Min(mul, 1), 0.1f);
+                    // dT *= Math.Min((float) magnitude / orbitAroundRadius * 5, 1);
                 }
             }
             else
@@ -237,7 +236,6 @@ public class Trajectory
             {
                 return this;
             }
-            
 
             var newVelocity = (lastBufferItem.Item2 + acceleration * dT) * (float) Math.Pow(atmosphere, dT);
             var newPosition = lastBufferItem.Item1 + newVelocity * dT;
@@ -253,7 +251,6 @@ public class Trajectory
 
         return this;
     }
-
 
     public List<Vector3> Positions(int modulo)
     {
@@ -274,7 +271,7 @@ public class Trajectory
         return points.Length < points.Capacity;
     }
 
-    public bool isEmpty()
+    public bool IsEmpty()
     {
         return points.Length == 0;
     }

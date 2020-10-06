@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Objects.Player
 {
@@ -12,7 +10,7 @@ namespace Objects.Player
         {
             if (world.ballObject)
             {
-                if (world.goalPlanet != transform.GetComponentInParent<VehicleTracker>()._lastOrbitedPlanet)
+                if (world.goalPlanet != transform.GetComponentInParent<VehicleTracker>().lastOrbitedPlanet)
                 {
                     var pos = transform.position;
                     var goalPosition = world.goalPlanet.transform.position;

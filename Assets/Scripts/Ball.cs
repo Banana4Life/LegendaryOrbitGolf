@@ -1,11 +1,7 @@
 ﻿using System;
-using System.IO;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
-
-
 
 public class Ball : GravityObject
 {
@@ -14,14 +10,13 @@ public class Ball : GravityObject
 
     public bool dead;
 
-    private Vector3 savePosition;
-    private Vector3 saveVelocity;
+    private Vector3 _savePosition;
+    private Vector3 _saveVelocity;
 
     private Trajectory _trajectory = new Trajectory();
     private Trajectory _planTrajectory = new Trajectory();
     
-    private float dtSince;
-
+    private float _dtSince;
 
     public World world;
 
@@ -37,11 +32,12 @@ public class Ball : GravityObject
         world = GetComponentInParent<World>();
     }
     
-    public void PlaceInOrbit(World world)
+    public void PlaceInOrbit(World inWorld)
     {
-        this.world = world;
+        world = inWorld;
         PlaceInOrbit();
     }
+    
     public void PlaceInOrbit()
     {
         // v = sqrt(GM * (2/r - 1/a))
@@ -55,13 +51,12 @@ public class Ball : GravityObject
         var orbitModifier = (2 / distance - 1 / a);
         velocity = Vector3.forward * Mathf.Sqrt(G * startPlanet.mass * orbitModifier);
         frozen = false;
-        Debug.Log("Placed with " + a + "/" + planet.radiusGravity + " around " + planet.name);
 
         movingParticleSystem.Clear();
         brakeParticleSystem.Clear();
 
-        savePosition = transform.position;
-        saveVelocity = velocity;
+        _savePosition = transform.position;
+        _saveVelocity = velocity;
         
         RecalculateTrajectory();
     }
@@ -88,9 +83,9 @@ public class Ball : GravityObject
 
     private void FollowTrajectory()
     {
-        dtSince += Time.deltaTime;
+        _dtSince += Time.deltaTime;
 
-        if (_trajectory.CalculateNext(dtSince, out var pos, out var v))
+        if (_trajectory.CalculateNext(_dtSince, out var pos, out var v))
         {
             if (pos.sqrMagnitude == 0)
             {
@@ -128,11 +123,10 @@ public class Ball : GravityObject
         {
             if (!wasAnalyzed)
             {
-                savePosition = transform.position;
-                saveVelocity = velocity;    
+                _savePosition = transform.position;
+                _saveVelocity = velocity;    
             }
         }    
-        
     }
 
     private void CheckStillInOrbit()
@@ -173,7 +167,7 @@ public class Ball : GravityObject
         var newTrajectory = _planTrajectory;
         _planTrajectory = _trajectory.Reset();
         _trajectory = newTrajectory;
-        dtSince = 0;
+        _dtSince = 0;
         UnFreeze();
         bumpSound.Play();
     }
@@ -184,8 +178,8 @@ public class Ball : GravityObject
         transform.position = pos;
         velocity = Vector3.zero;
         frozen = true;
-        savePosition = pos;
-        saveVelocity = velocity;
+        _savePosition = pos;
+        _saveVelocity = velocity;
         RecalculateTrajectory();
     }
 
@@ -195,7 +189,6 @@ public class Ball : GravityObject
         brakeParticleSystem.Play();
         RecalculateTrajectory();
         engageBrakeSound.Play();
-        // TODO sounds
     }
 
     public void StartPlanning()
@@ -203,8 +196,8 @@ public class Ball : GravityObject
         // If currently stable save position for later retry
         if (_trajectory.isStable)
         {
-            savePosition = transform.position;
-            saveVelocity = velocity;
+            _savePosition = transform.position;
+            _saveVelocity = velocity;
         }
         // If dead revive at last savePoint
         if (dead)
@@ -225,7 +218,7 @@ public class Ball : GravityObject
     private void RecalculateTrajectory()
     {
         _trajectory.Reset().Continue(Vector3.zero, this);
-        dtSince = 0;
+        _dtSince = 0;
         AnalyzeTrajectory();
     }
 
@@ -234,15 +227,9 @@ public class Ball : GravityObject
         var playerControlledDirection = -(hover - ballPos).normalized;
         var ballControlledDirection = -ballVelocity.normalized;
 
-        // Linear curve
-        var linearMagnitude = holdingTime * maxSpeed;
-
         // Sinus curve with min speed
-        var p = 8;
-        var triangleMagnitude = (float) (2 * Math.Abs(2 * ((holdingTime / p) - Math.Floor((holdingTime / p) + 0.5)))) * (maxSpeed - minSpeed) / 2 + minSpeed;
         var magnitude = ballVelocity.magnitude;
         var sawToothMagniture = minSpeed + Math.Abs(holdingTime % maxSpeed) * (magnitude == 0 ? 1 : magnitude / 15);
-        var sinusMagnitude = (float) (Math.Sin(0.6 * holdingTime - 1.57) * (maxSpeed - minSpeed) / 2 + (maxSpeed / 2 + minSpeed));
         // var magnitude = Math.Min(linearMagnitude, 5);
         if (magnitude == 0)
         {
@@ -251,7 +238,6 @@ public class Ball : GravityObject
 
         return ballControlledDirection * Math.Min(sawToothMagniture, maxSpeed * magnitude  / 15);
     }
-    
     
     private void DrawTrajectory()
     {
@@ -263,7 +249,7 @@ public class Ball : GravityObject
     {
         LineRenderer lr = go.GetComponent<LineRenderer>();
         
-        if (trajectory == null || trajectory.isEmpty())
+        if (trajectory == null || trajectory.IsEmpty())
         {
             lr.enabled = false;
             return;
@@ -288,9 +274,6 @@ public class Ball : GravityObject
 
     }
     
-
-    
-    
 #if UNITY_EDITOR
 
     private void OnDrawGizmos()
@@ -298,12 +281,12 @@ public class Ball : GravityObject
         DrawTrajectoryGizmos(_trajectory, Color.gray, Color.blue);
         DrawTrajectoryGizmos(_planTrajectory, Color.white, Color.green);
         Handles.color = Color.cyan;
-        Handles.DrawWireDisc(savePosition, Vector3.up, radius);
+        Handles.DrawWireDisc(_savePosition, Vector3.up, radius);
     }
 
     private void DrawTrajectoryGizmos(Trajectory trajectory, Color color, Color colorStable)
     {
-        if (trajectory == null || trajectory.isEmpty())
+        if (trajectory == null || trajectory.IsEmpty())
         {
             return;
         }
@@ -323,7 +306,7 @@ public class Ball : GravityObject
         //     prevPosition = position;
         // }
 
-        if (!trajectory.isEmpty() && trajectory.IsInterupted())
+        if (!trajectory.IsEmpty() && trajectory.IsInterupted())
         {
             Handles.color = Color.red;
             Handles.DrawWireDisc(trajectory.points.Tail.Item1, Vector3.up, radius);
@@ -347,7 +330,7 @@ public class Ball : GravityObject
 
     public bool HasPlan()
     {
-        return !_planTrajectory.isEmpty();
+        return !_planTrajectory.IsEmpty();
     }
 
     public void ScrapPlan()
@@ -361,8 +344,8 @@ public class Ball : GravityObject
     public void Revive()
     {
         dead = false;
-        transform.position = savePosition;
-        velocity = saveVelocity;
+        transform.position = _savePosition;
+        velocity = _saveVelocity;
         if (velocity.sqrMagnitude == 0)
         {
             PlaceInOrbit();

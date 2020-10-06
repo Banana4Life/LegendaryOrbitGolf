@@ -120,7 +120,6 @@ namespace Objects.Player
                     _smoothCamera.SetZoom(newCameraHeight);
                 }
             }
-          
 
             if (Input.GetButton("Jump"))
             {

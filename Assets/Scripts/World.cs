@@ -41,6 +41,7 @@ public class World : MonoBehaviour
 
     public LineRenderer lr1;
     public LineRenderer lr2;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -98,7 +99,7 @@ public class World : MonoBehaviour
     void CollectParPlanets(Planet start, Planet goal)
     {
         var goalParticleInstance = Instantiate(goalParticlePrefab, goal.gameObject.transform);
-        goal.setGoal(goalParticleInstance);
+        goal.SetGoal(goalParticleInstance);
         
         var startPos = Helper.ToVector2(start.transform.position);
         var goalPos3d = goal.transform.position;
@@ -354,6 +355,7 @@ public class World : MonoBehaviour
         }
     }
 #endif
+    
     public void NewGoal()
     {
         var list = allPlanets.FindAll(p =>p.mass > 0 && p != goalPlanet);

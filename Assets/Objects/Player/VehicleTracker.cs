@@ -8,7 +8,7 @@ namespace Objects.Player
         private PlayerController _playerController;
         private SmoothCamera _smoothCamera;
         private Ball _spaceVehicle;
-        public Planet _lastOrbitedPlanet;
+        public Planet lastOrbitedPlanet;
 
         public AudioSource success;
         public AudioSource lesserSuccess;
@@ -30,14 +30,13 @@ namespace Objects.Player
                 }
                 _spaceVehicle = ballObject.GetComponent<Ball>();
             }
-
             
             if (_spaceVehicle.inOrbitAround)
             {
                 var planet = _spaceVehicle.inOrbitAround;
-                if (planet != _lastOrbitedPlanet)
+                if (planet != lastOrbitedPlanet)
                 {
-                    _lastOrbitedPlanet = planet;
+                    lastOrbitedPlanet = planet;
                     var dimensions = new Vector2(2 * planet.radiusGravity, 2 * planet.radiusGravity) * 1.2f;
                     var distance = Helper.DistanceToFillFrustum(_playerController.playerCamera, dimensions);
                     _smoothCamera.SetZoomTarget(distance);
@@ -61,7 +60,7 @@ namespace Objects.Player
             }
             else
             {
-                _lastOrbitedPlanet = null;
+                lastOrbitedPlanet = null;
                 var spaceVehiclePosition = _spaceVehicle.transform.position;
                 _smoothCamera.SetTarget(spaceVehiclePosition);
             }

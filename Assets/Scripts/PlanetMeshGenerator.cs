@@ -52,8 +52,8 @@ public class PlanetMeshGenerator : MonoBehaviour
     public string prefabName;
     public GameObject generatedPlanet;
     
-    private Mesh oceanMesh; 
-    private Mesh groundMesh;
+    private Mesh _oceanMesh; 
+    private Mesh _groundMesh;
 
 #if UNITY_EDITOR
     public void GeneratePlanet()
@@ -64,12 +64,12 @@ public class PlanetMeshGenerator : MonoBehaviour
         var polygons = Subdivide(InitPolygons(), vertices, numberOfSubdivides);
         CalculateNeighbors(polygons);
 
-        oceanMesh = GetOceanMesh(polygons, vertices, colorOcean);
-        groundMesh = GetGroundMesh(polygons, vertices, continentSizeMin, continentSizeMax, numberOfContinents, colorLand, colorSides, colorOcean, colorDeepOcean, generateHills, generateDeepOceans);
+        _oceanMesh = GetOceanMesh(polygons, vertices, colorOcean);
+        _groundMesh = GetGroundMesh(polygons, vertices, continentSizeMin, continentSizeMax, numberOfContinents, colorLand, colorSides, colorOcean, colorDeepOcean, generateHills, generateDeepOceans);
 
         generatedPlanet = new GameObject(prefabName);
-        CreateGameObject(generatedPlanet, oceanMesh, oceanMaterial);
-        CreateGameObject(generatedPlanet, groundMesh, groundMaterial);
+        CreateGameObject(generatedPlanet, _oceanMesh, oceanMaterial);
+        CreateGameObject(generatedPlanet, _groundMesh, groundMaterial);
 
         generatedPlanet.transform.parent = transform.parent;
         generatedPlanet.name = "Generated Planet - Use 'Save as Prefab' if you like it.";
@@ -83,8 +83,8 @@ public class PlanetMeshGenerator : MonoBehaviour
             DestroyImmediate(generatedPlanet);
         }
 
-        oceanMesh = null;
-        groundMesh = null;
+        _oceanMesh = null;
+        _groundMesh = null;
     }
     
     public void SaveAsPrefab() 
@@ -102,8 +102,8 @@ public class PlanetMeshGenerator : MonoBehaviour
             AssetDatabase.CreateFolder(worldPath, "Meshs");
         }
 
-        AssetDatabase.CreateAsset(groundMesh, $"{meshPath}/{prefabName}_{groundMesh.name}.mesh");
-        AssetDatabase.CreateAsset(oceanMesh, $"{meshPath}/{prefabName}_{oceanMesh.name}.mesh");
+        AssetDatabase.CreateAsset(_groundMesh, $"{meshPath}/{prefabName}_{_groundMesh.name}.mesh");
+        AssetDatabase.CreateAsset(_oceanMesh, $"{meshPath}/{prefabName}_{_oceanMesh.name}.mesh");
         AssetDatabase.SaveAssets();
         
         var prefabPath = $"{worldPath}/{prefabName}.prefab";
