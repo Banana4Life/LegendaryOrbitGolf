@@ -17,6 +17,8 @@ namespace Objects.Player
         public Camera playerCamera;
         private Transform _cameraTransform;
         private SmoothCamera _smoothCamera;
+
+        public bool disableScroll;
     
         // Start is called before the first frame update
         void Start()
@@ -107,14 +109,18 @@ namespace Objects.Player
                 _smoothCamera.SetRelativeTarget(scroll * (speed * Time.deltaTime));
             }
 
-            var scrollValue = Input.mouseScrollDelta.y;
-            if (Mathf.Abs(scrollValue) > float.Epsilon)
+            if (!disableScroll)
             {
-                var currentCameraHeight = _cameraTransform.localPosition.y;
-                var newCameraHeight = Mathf.Clamp(currentCameraHeight - (scrollValue * zoomSpeed), minZoom, maxZoom);
-                _cameraTransform.localPosition = new Vector3(0, newCameraHeight, 0);
-                _smoothCamera.SetZoom(newCameraHeight);
+                var scrollValue = Input.mouseScrollDelta.y;
+                if (Mathf.Abs(scrollValue) > float.Epsilon)
+                {
+                    var currentCameraHeight = _cameraTransform.localPosition.y;
+                    var newCameraHeight = Mathf.Clamp(currentCameraHeight - (scrollValue * zoomSpeed), minZoom, maxZoom);
+                    _cameraTransform.localPosition = new Vector3(0, newCameraHeight, 0);
+                    _smoothCamera.SetZoom(newCameraHeight);
+                }
             }
+          
 
             if (Input.GetButton("Jump"))
             {

@@ -32,15 +32,20 @@ public class MouseController : MonoBehaviour
         }
         else if (Input.GetButtonDown("Fire1"))
         {
-            if (ball.HasPlan())
+            if (holding)
             {
-                ball.SubmitPlan();
+                mousePosition.z = mainCamera.transform.position.y;
+                hover = mainCamera.ScreenToWorldPoint(mousePosition);
+                holding = false;
+                ball.PlanTrajectory(hover, holdingTime);
+                GetComponentInChildren<PlayerController>().disableScroll = false;
                 hud.AddShot();
                 if (ball.inOrbitAround)
                 {
                     var distance = Helper.DistanceToFillFrustum(GetComponentInChildren<PlayerController>().playerCamera, Vector2.one * ball.inOrbitAround.radiusGravity *2);
                     GetComponentInChildren<SmoothCamera>().SetZoomTarget(distance);
                 }
+                ball.SubmitPlan();
             }
             else
             {
@@ -48,21 +53,17 @@ public class MouseController : MonoBehaviour
                 holdingTime = 0;
                 ball.StartPlanning();
                 GetComponentInChildren<SmoothCamera>().SetZoomTarget(100);
+                GetComponentInChildren<PlayerController>().disableScroll = true;
             }
-        }
-        else if (Input.GetButtonUp("Fire1") && holding)
-        {
-            mousePosition.z = mainCamera.transform.position.y;
-            hover = mainCamera.ScreenToWorldPoint(mousePosition);
-            holding = false;
-            ball.PlanTrajectory(hover, holdingTime);
         }
         else if (holding)
         {
-            holdingTime += Time.deltaTime;
+            // holdingTime += Time.deltaTime;
             mousePosition.z = mainCamera.transform.position.y;
             hover = mainCamera.ScreenToWorldPoint(mousePosition);
             hover.y = 0;
+
+            holdingTime += Input.mouseScrollDelta.y * Time.deltaTime * ball.velocity.magnitude;
         }
 
         if (Input.GetButtonDown("Fire2"))
@@ -70,6 +71,7 @@ public class MouseController : MonoBehaviour
             if (ball.HasPlan()) // Abort with R-Click
             {
                 ball.ScrapPlan();
+                holding = false;
             }
             else
             {
@@ -80,8 +82,8 @@ public class MouseController : MonoBehaviour
         if (Input.GetButtonDown("BackSpace"))
         {
             ball.ScrapPlan();
+            holding = false;
             ball.Revive();
-            hud.ResetShots();
         }
 
         if (holding)

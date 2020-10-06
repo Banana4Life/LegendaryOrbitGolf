@@ -240,15 +240,16 @@ public class Ball : GravityObject
         // Sinus curve with min speed
         var p = 8;
         var triangleMagnitude = (float) (2 * Math.Abs(2 * ((holdingTime / p) - Math.Floor((holdingTime / p) + 0.5)))) * (maxSpeed - minSpeed) / 2 + minSpeed;
+        var magnitude = ballVelocity.magnitude;
+        var sawToothMagniture = minSpeed + Math.Abs(holdingTime % maxSpeed) * magnitude / 15;
         var sinusMagnitude = (float) (Math.Sin(0.6 * holdingTime - 1.57) * (maxSpeed - minSpeed) / 2 + (maxSpeed / 2 + minSpeed));
-
         // var magnitude = Math.Min(linearMagnitude, 5);
         if (ballVelocity.sqrMagnitude == 0)
         {
-            return playerControlledDirection * Math.Min(minSpeed + linearMagnitude, maxSpeed);
+            return playerControlledDirection * Math.Min(minSpeed + sawToothMagniture, maxSpeed * magnitude  / 15);
         }
 
-        return ballControlledDirection * Math.Min(triangleMagnitude, maxSpeed);
+        return ballControlledDirection * Math.Min(sawToothMagniture, maxSpeed * magnitude  / 15);
     }
     
     
