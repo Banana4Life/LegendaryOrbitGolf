@@ -52,6 +52,10 @@ public class MouseController : MonoBehaviour
                 holding = true;
                 holdingTime = 0;
                 ball.StartPlanning();
+                if (ball.velocity.sqrMagnitude == 0)
+                {
+                    holdingTime = 5f;
+                }
                 if (ball.inOrbitAround || ball.velocity.sqrMagnitude == 0)
                 {
                     GetComponentInChildren<SmoothCamera>().SetZoomTarget(100);
@@ -70,7 +74,8 @@ public class MouseController : MonoBehaviour
             hover = mainCamera.ScreenToWorldPoint(mousePosition);
             hover.y = 0;
 
-            holdingTime += Input.mouseScrollDelta.y * Time.deltaTime * ball.velocity.magnitude;
+            var vv = ball.velocity.magnitude;
+            holdingTime += Input.mouseScrollDelta.y * Time.deltaTime * (vv == 0 ? 10 : vv);
         }
 
         if (Input.GetButtonDown("Fire2"))
