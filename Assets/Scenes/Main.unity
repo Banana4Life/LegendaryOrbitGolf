@@ -1285,6 +1285,10 @@ PrefabInstance:
       propertyPath: hud
       value: 
       objectReference: {fileID: 11294575}
+    - target: {fileID: 2706697521283477669, guid: 8c7398c9fc794de4492941206df7644c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -75
+      objectReference: {fileID: 0}
     - target: {fileID: 4113164212539511701, guid: 8c7398c9fc794de4492941206df7644c, type: 3}
       propertyPath: hud
       value: 
@@ -1336,6 +1340,49 @@ PrefabInstance:
     - target: {fileID: 5283696003366951193, guid: 8c7398c9fc794de4492941206df7644c, type: 3}
       propertyPath: m_Colors.m_SelectedColor.b
       value: 0.007843138
+      objectReference: {fileID: 0}
+    - target: {fileID: 5734413995299223402, guid: 8c7398c9fc794de4492941206df7644c, type: 3}
+      propertyPath: m_Text
+      value: 'Controls
+
+        
+
+        General:
+
+        
+
+        backspace:
+        reset to your last stable orbit position
+
+        
+
+        In play mode:
+
+        
+
+        left
+        mouse click or left control: enter boost mode
+
+        right mouse click
+        or alt: breaks by using reverse thrust pulse (slows you down by 20%)
+
+        mouse
+        wheel: zoom
+
+        
+
+        In boost mode:
+
+        
+
+        mouse
+        wheel: adjust your thrust level and see your new path ahead
+
+        left
+        mouse click or left control: continue with the new thrust level
+
+        right
+        mouse click or alt: continue with the old thrust level'
       objectReference: {fileID: 0}
     - target: {fileID: 6353080322393182033, guid: 8c7398c9fc794de4492941206df7644c, type: 3}
       propertyPath: m_Colors.m_NormalColor.r
@@ -1738,6 +1785,7 @@ MonoBehaviour:
   startZoom: 0.8
   borderSize: 30
   playerCamera: {fileID: 70634107}
+  disableScroll: 0
 --- !u!114 &1542772265
 MonoBehaviour:
   m_ObjectHideFlags: 0
