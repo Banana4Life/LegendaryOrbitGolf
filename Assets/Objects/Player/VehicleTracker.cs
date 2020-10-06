@@ -8,7 +8,7 @@ namespace Objects.Player
         private PlayerController _playerController;
         private SmoothCamera _smoothCamera;
         private Ball _spaceVehicle;
-        private Planet _lastOrbitedPlanet;
+        public Planet _lastOrbitedPlanet;
         
         void Start()
         {

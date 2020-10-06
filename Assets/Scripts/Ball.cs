@@ -94,10 +94,7 @@ public class Ball : GravityObject
             velocity = v;
         }
 
-        if (!_trajectory.isAnalyzed)
-        {
-            AnalyzeTrajectory();
-        }
+        AnalyzeTrajectory();
     }
 
     public void AnalyzeTrajectory()
@@ -118,14 +115,12 @@ public class Ball : GravityObject
             }
         }
 
-        if (!_trajectory.isAnalyzed)
+        if (_trajectory.Analyze(inOrbitAround, this))
         {
-            if (_trajectory.Analyze(inOrbitAround, this))
-            {
-                savePosition = transform.position;
-                saveVelocity = velocity;
-            }    
-        }
+            savePosition = transform.position;
+            saveVelocity = velocity;
+        }    
+        
     }
 
     private void CheckStillInOrbit()

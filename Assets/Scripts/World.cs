@@ -12,7 +12,7 @@ public class World : MonoBehaviour
     public GameObject ballPrefab;
     public GameObject planets;
     public Hud hud;
-    private GameObject ballObject;
+    public GameObject ballObject;
     public float minPlanetSize = 1;
     public float maxPlanetSize = 2;
     public float minMass = 20000f;
