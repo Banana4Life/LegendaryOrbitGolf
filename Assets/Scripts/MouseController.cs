@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Objects.Player;
 using UnityEditor;
 using UnityEngine;
 
@@ -35,12 +36,18 @@ public class MouseController : MonoBehaviour
             {
                 ball.SubmitPlan();
                 hud.AddShot();
+                if (ball.inOrbitAround)
+                {
+                    var distance = Helper.DistanceToFillFrustum(GetComponentInChildren<PlayerController>().playerCamera, Vector2.one * ball.inOrbitAround.radiusGravity *2);
+                    GetComponentInChildren<SmoothCamera>().SetZoomTarget(distance);
+                }
             }
             else
             {
                 holding = true;
                 holdingTime = 0;
                 ball.StartPlanning();
+                GetComponentInChildren<SmoothCamera>().SetZoomTarget(100);
             }
         }
         else if (Input.GetButtonUp("Fire1") && holding)
@@ -66,7 +73,7 @@ public class MouseController : MonoBehaviour
             }
             else
             {
-                ball.EngangeBreaks();
+                ball.EngangeBrakes();
             }
         }
 
