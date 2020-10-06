@@ -52,7 +52,7 @@ public class MouseController : MonoBehaviour
                 holding = true;
                 holdingTime = 0;
                 ball.StartPlanning();
-                if (ball.inOrbitAround)
+                if (ball.inOrbitAround || ball.velocity.sqrMagnitude == 0)
                 {
                     GetComponentInChildren<SmoothCamera>().SetZoomTarget(100);
                 }
