@@ -116,7 +116,7 @@ public class Trajectory
         {
             if (previous == null)
             {
-                throw new InvalidDataException("Trajectory had no previous data for " + dtSince);
+                throw new InvalidDataException($"Trajectory had no previous data for {dtSince}");
             }
 
             var next = points.Head;
@@ -138,7 +138,7 @@ public class Trajectory
         {
             if (previous == null)
             {
-                throw new InvalidDataException("Trajectory had no previous data for " + dtSince);
+                throw new InvalidDataException($"Trajectory had no previous data for {dtSince}");
             }
             position = previous.Item1;
             velocity = previous.Item2;
