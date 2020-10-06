@@ -354,4 +354,13 @@ public class World : MonoBehaviour
         }
     }
 #endif
+    public void NewGoal()
+    {
+        var list = allPlanets.FindAll(p =>p.mass > 0 && p != goalPlanet);
+        var planet = list[Random.Range(0, list.Count)];
+        goalPlanet = planet;
+        
+        CollectParPlanets(ballObject.GetComponent<Ball>().inOrbitAround, goalPlanet);
+        SetParCount();
+    }
 }

@@ -346,4 +346,9 @@ public class Ball : GravityObject
         RecalculateTrajectory();
         UnFreeze();
     }
+
+    public bool IsInStableOrbit()
+    {
+        return _trajectory.isStable;
+    }
 }

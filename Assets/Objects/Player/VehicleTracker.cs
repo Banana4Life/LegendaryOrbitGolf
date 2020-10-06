@@ -42,6 +42,11 @@ namespace Objects.Player
                     var pos = _spaceVehicle.inOrbitAround.transform.position;
                     _smoothCamera.SetTarget(pos);
                 }
+
+                if (_spaceVehicle.IsInStableOrbit() && _spaceVehicle.inOrbitAround == _spaceVehicle.world.goalPlanet)
+                {
+                    _spaceVehicle.world.NewGoal();
+                }
             }
             else
             {
