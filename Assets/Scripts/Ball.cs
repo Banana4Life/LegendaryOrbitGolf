@@ -22,12 +22,15 @@ public class Ball : GravityObject
     
     private float dtSince;
 
+
     public World world;
 
     public float minBumpSpeed = 0.5f;
     public float maxBumpSpeed = 15;
 
+    public AudioSource collisionSound;
     public AudioSource engageBrakeSound;
+    public AudioSource bumpSound;
 
     private void Start()
     {
@@ -67,6 +70,8 @@ public class Ball : GravityObject
     {
         frozen = true;
         dead = true;
+        collisionSound.Play();
+        bumpSound.Stop();
     }
     
     void Update()
@@ -103,23 +108,29 @@ public class Ball : GravityObject
         foreach (var planet in world.allPlanets)
         {
             var delta = transform.position - planet.transform.position;
-            // if (CheckCollided(delta, radius + planet.radius))
-            // {
-            //     OnCollided(); // TODO cannot call it here anymore
-            //     return;
-            // }
+            
                 
             if (TrajectoryUtil.CheckCollided(delta, radiusGravity + planet.radiusGravity))
             {
+                if (TrajectoryUtil.CheckCollided(delta, radius + planet.radius))
+                {
+                    OnCollided();
+                    return;
+                }
+                
                 inOrbitAround = planet;
                 break;
             }
         }
 
+        var wasAnalyzed = _trajectory.isAnalyzed;
         if (_trajectory.Analyze(inOrbitAround, this))
         {
-            savePosition = transform.position;
-            saveVelocity = velocity;
+            if (!wasAnalyzed)
+            {
+                savePosition = transform.position;
+                saveVelocity = velocity;    
+            }
         }    
         
     }
@@ -164,6 +175,7 @@ public class Ball : GravityObject
         _trajectory = newTrajectory;
         dtSince = 0;
         UnFreeze();
+        bumpSound.Play();
     }
 
     public void CheatJumpTo(Vector3 pos)

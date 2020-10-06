@@ -83,7 +83,8 @@ public class Trajectory
         rPeriapsis = semiMajoral * (1 - eMagnitude);
         if (eMagnitude < 1)
         {
-            isStable = rApoapsis < orbitAround.radiusGravity - ball.radius;
+            isStable = rApoapsis < orbitAround.radiusGravity - ball.radius &&
+                       rPeriapsis > orbitAround.radius * 1.5 + ball.radius;
         }
         else
         {

@@ -9,6 +9,9 @@ namespace Objects.Player
         private SmoothCamera _smoothCamera;
         private Ball _spaceVehicle;
         public Planet _lastOrbitedPlanet;
+
+        public AudioSource success;
+        public AudioSource lesserSuccess;
         
         void Start()
         {
@@ -45,6 +48,14 @@ namespace Objects.Player
 
                 if (_spaceVehicle.IsInStableOrbit() && _spaceVehicle.inOrbitAround == _spaceVehicle.world.goalPlanet)
                 {
+                    if (_spaceVehicle.world.hud.shotCount <= _spaceVehicle.world.hud.shotsForPar)
+                    {
+                        success.Play();
+                    }
+                    else
+                    {
+                        lesserSuccess.Play();
+                    }
                     _spaceVehicle.world.NewGoal();
                 }
             }

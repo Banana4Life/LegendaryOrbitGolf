@@ -39,9 +39,6 @@ public class World : MonoBehaviour
 
     public GameObject goalParticlePrefab;
 
-    public AudioSource engageBrakesSound;
-
-
     public LineRenderer lr1;
     public LineRenderer lr2;
     // Start is called before the first frame update
@@ -179,7 +176,6 @@ public class World : MonoBehaviour
         var ball = ballObject.GetComponent<Ball>();
         GetComponent<MouseController>().ball = ball;
         ball.PlaceInOrbit(this);
-        ball.engageBrakeSound = engageBrakesSound;
     }
 
 #if UNITY_EDITOR
