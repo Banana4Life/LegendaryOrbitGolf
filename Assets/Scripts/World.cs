@@ -37,6 +37,8 @@ public class World : MonoBehaviour
     public float goalMass = 50000f;
     public float goalSize = 2;
 
+    public GameObject goalParticlePrefab;
+
     public AudioSource engageBreaksSound;
 
 
@@ -98,6 +100,9 @@ public class World : MonoBehaviour
 
     void CollectParPlanets(Planet start, Planet goal)
     {
+        var goalParticleInstance = Instantiate(goalParticlePrefab, goal.gameObject.transform);
+        goal.setGoal(goalParticleInstance);
+        
         var startPos = Helper.ToVector2(start.transform.position);
         var goalPos3d = goal.transform.position;
         var goalPos = Helper.ToVector2(goalPos3d);
@@ -358,6 +363,7 @@ public class World : MonoBehaviour
     {
         var list = allPlanets.FindAll(p =>p.mass > 0 && p != goalPlanet);
         var planet = list[Random.Range(0, list.Count)];
+        goalPlanet.DeleteGoal();
         goalPlanet = planet;
         
         CollectParPlanets(ballObject.GetComponent<Ball>().inOrbitAround, goalPlanet);

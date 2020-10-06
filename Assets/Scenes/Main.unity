@@ -759,6 +759,7 @@ MonoBehaviour:
   goalDistance: 70
   goalMass: 50000
   goalSize: 2
+  goalParticlePrefab: {fileID: 5065056741092912301, guid: ae20be795a43b77dc9d97631d1b7e6c8, type: 3}
   engageBreaksSound: {fileID: 86048198}
   lr1: {fileID: 1609620336}
   lr2: {fileID: 74412370}
