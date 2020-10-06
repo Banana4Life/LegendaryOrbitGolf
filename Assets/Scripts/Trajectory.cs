@@ -36,7 +36,9 @@ public class Trajectory
 
     public bool isAnalyzed;
     public bool isStable;
-    public Vector2 orbitPoint;
+    public float rApoapsis;
+    public float rPeriapsis;
+    public Vector3 e;
     
     public RingBuffer<Tuple<Vector3, Vector3, float>> points = new RingBuffer<Tuple<Vector3, Vector3, float>>(Capacity);
 
@@ -45,49 +47,53 @@ public class Trajectory
         points = new RingBuffer<Tuple<Vector3, Vector3, float>>(Capacity);
         isAnalyzed = false;
         isStable = false;
-        orbitPoint = Vector2.zero;
         return this;
     }
 
-    public bool Analyze(Planet orbitAround, float orbitPointSize)
+    public bool Analyze(Planet orbitAround, Ball ball)
     {
         if (isAnalyzed || !orbitAround) return isStable;
+        
+        // v = sqrt(GM * (2/r - 1/a))
+        // v² = GM * (2r -1/a)
+        // v²/GM = 2/r-1/a
+        // (v²/GM -2/r) = -1/a
+        // a = -1 / (v²/GM -2/r)
+        
         
         var planetPos = orbitAround.transform.position;
         var planetPos2 = new Vector2(planetPos.x, planetPos.z);
         var planetPos2Line = new Vector2(planetPos.x, planetPos.z + orbitAround.radiusGravity);
 
-        Vector2 oldPos = new Vector2(points.Head.Item1.x, points.Head.Item1.z);
-        orbitPoint = oldPos;
+        var r = (points.Head.Item1 - planetPos);
+        var v = points.Head.Item2;
 
-        int revolutions = 0;
-        for (int i = 0; i < points.Length; i++)
+        // h = Vector3.Cross(r, v);
+        // var nhat = Vector3.Cross(Vector3.forward, h);
+
+        var mue = (GravityObject.G * orbitAround.mass);
+        e = ((v.sqrMagnitude - mue / r.magnitude) * r - (Vector3.Dot(r, v) * v)) / mue;
+        var eMagnitude = e.magnitude;
+        // omega = Mathf.Acos(Vector3.Dot(nhat, e) / nhat.magnitude * eMagnitude);
+
+        
+        var semiMajoral = -1f / ((points.Head.Item2.sqrMagnitude / mue) -
+                              2f / r.magnitude);
+        rApoapsis = semiMajoral * (1 + eMagnitude);
+        rPeriapsis = semiMajoral * (1 - eMagnitude);
+        if (eMagnitude < 1)
         {
-            var newPos = new Vector2(points[i].Item1.x, points[i].Item1.z);
-
-            if (LinesUtil.LineSegmentsIntersection(oldPos, newPos, planetPos2, planetPos2Line,
-                out Vector2 intersection))
-            {
-                if ((orbitPoint - intersection).sqrMagnitude < orbitPointSize * orbitPointSize)
-                {
-                    revolutions++;
-                    if (revolutions > 1)
-                    {
-                        isStable = true;
-                        isAnalyzed = true;
-                        break;
-                    }
-                }
-                else
-                {
-                    isStable = false;
-                    orbitPoint = intersection;
-                    revolutions = 0;
-                }
-            }
-
-            oldPos = newPos;
+            isStable = rApoapsis < orbitAround.radiusGravity - ball.radius;
         }
+        else
+        {
+            isStable = false;
+        }
+            
+        
+        // e = 1 - (2/ ((ra/rp)+1))
+        // e = 1 - (2/ (((a*(1-e))/(a*(1+e)))+1))
+        // Debug.Log("e: " + Math.Round(eMagnitude, 3) + " a:" +Math.Round(semiMajoral, 3) + " rMax:" + orbitAround.radiusGravity + " stable: " + isStable);
 
         return isStable;
     }

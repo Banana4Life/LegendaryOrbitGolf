@@ -21,8 +21,6 @@ public class Ball : GravityObject
     
     private float dtSince;
 
-    private float orbitPointSize = 0.25f;
-
     public World world;
 
     public float minBumpSpeed = 0.5f;
@@ -42,6 +40,8 @@ public class Ball : GravityObject
     }
     public void PlaceInOrbit()
     {
+        // v = sqrt(GM * (2/r - 1/a))
+        // a = 1/2 of longest axis
         var planet = world.startPlanet;
         var gravityObject = planet.GetComponent<GravityObject>();
         transform.position = planet.transform.position;
@@ -51,6 +51,7 @@ public class Ball : GravityObject
         var orbitModifier = (2 / distance - 1 / a);
         velocity = Vector3.forward * Mathf.Sqrt(G * planet.mass * orbitModifier);
         frozen = false;
+        Debug.Log("Placed with " + a + "/" + gravityObject.radiusGravity + " around " + gravityObject.name);
 
         movingParticleSystem.Clear();
         breakParticleSystem.Clear();
@@ -119,7 +120,7 @@ public class Ball : GravityObject
 
         if (!_trajectory.isAnalyzed)
         {
-            if (_trajectory.Analyze(inOrbitAround, orbitPointSize))
+            if (_trajectory.Analyze(inOrbitAround, this))
             {
                 savePosition = transform.position;
                 saveVelocity = velocity;
@@ -210,7 +211,7 @@ public class Ball : GravityObject
     {
         Vector3 ballPos = transform.position;
         var bumpSpeed = CalcBumpSpeed(ballPos, velocity, minBumpSpeed, maxBumpSpeed, hoverPosition, holdingTime);
-        _planTrajectory.Reset().Continue(bumpSpeed, this).Analyze(inOrbitAround, orbitPointSize);
+        _planTrajectory.Reset().Continue(bumpSpeed, this).Analyze(inOrbitAround, this);
     }
 
     private void RecalculateTrajectory()
@@ -285,8 +286,8 @@ public class Ball : GravityObject
 
     private void OnDrawGizmos()
     {
-        // DrawTrajectoryGizmos(_trajectory, Color.gray, Color.blue);
-        // DrawTrajectoryGizmos(_planTrajectory, Color.white, Color.green);
+        DrawTrajectoryGizmos(_trajectory, Color.gray, Color.blue);
+        DrawTrajectoryGizmos(_planTrajectory, Color.white, Color.green);
     }
 
     private void DrawTrajectoryGizmos(Trajectory trajectory, Color color, Color colorStable)
@@ -295,19 +296,21 @@ public class Ball : GravityObject
         {
             return;
         }
-
-        var prevPosition = trajectory.points.Head.Item1;
-        foreach (var position in trajectory.Positions(1))
-        {
-            Gizmos.color = color;
-            if (trajectory.isStable)
-            {
-                Gizmos.color = colorStable;
-            }
-            Handles.DrawWireDisc(position, Vector3.up, 0.1f);
-            Gizmos.DrawLine(prevPosition, position);
-            prevPosition = position;
-        }
+        
+        //
+        //
+        // var prevPosition = trajectory.points.Head.Item1;
+        // foreach (var position in trajectory.Positions(1))
+        // {
+        //     Gizmos.color = color;
+        //     if (trajectory.isStable)
+        //     {
+        //         Gizmos.color = colorStable;
+        //     }
+        //     // Handles.DrawWireDisc(position, Vector3.up, 0.1f);
+        //     Gizmos.DrawLine(prevPosition, position);
+        //     prevPosition = position;
+        // }
 
         if (!trajectory.isEmpty() && trajectory.IsInterupted())
         {
@@ -318,7 +321,15 @@ public class Ball : GravityObject
         if (trajectory.isAnalyzed)
         {
             Handles.color = Color.magenta;
-            Handles.DrawWireDisc(new Vector3(trajectory.orbitPoint.x, 0, trajectory.orbitPoint.y),  Vector3.up, orbitPointSize);    
+            if (inOrbitAround)
+            {
+                var eNormalized = _trajectory.e.normalized;
+                var planetPos = inOrbitAround.transform.position;
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(planetPos, planetPos + eNormalized * _trajectory.rPeriapsis);
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(planetPos, planetPos + eNormalized * -_trajectory.rApoapsis);
+            }
         }
     }
 #endif
@@ -332,6 +343,8 @@ public class Ball : GravityObject
     {
         _planTrajectory.Reset();
         UnFreeze();
+        _trajectory.isAnalyzed = false;
+        _trajectory.Analyze(inOrbitAround, this);
     }
 
     public void Revive()
